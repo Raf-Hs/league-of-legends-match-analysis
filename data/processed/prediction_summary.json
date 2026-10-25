@@ -1,0 +1,176 @@
+{
+  "generated_at_utc": "2026-10-25T23:34:15.455015+00:00",
+  "target_match": {
+    "team_a": "Hanwha Life Esports",
+    "team_b": "Invictus Gaming",
+    "code_a": "HLE",
+    "code_b": "IG",
+    "start_utc": "2026-10-25T17:00:00Z",
+    "collection_cutoff_utc": "2026-10-25T16:20:00Z"
+  },
+  "sample": {
+    "modelling_games": 174,
+    "train_games": 102,
+    "test_games": 72,
+    "train_date_min": "2026-06-30 09:55:43+00:00",
+    "train_date_max": "2026-08-30 21:03:08+00:00",
+    "test_date_min": "2026-09-02 08:11:08+00:00",
+    "test_date_max": "2026-10-25 00:34:10+00:00",
+    "split_utc": "2026-09-01 00:00:00+00:00",
+    "train_team_a_win_rate": 0.6078431372549019,
+    "test_team_a_win_rate": 0.4583333333333333
+  },
+  "primary_model": {
+    "name": "M3_core5",
+    "features": [
+      "wr_10_diff",
+      "gd10_10_diff",
+      "gold_diff_10_diff",
+      "kd_diff_10_diff",
+      "obj_10_diff"
+    ],
+    "regularization_C": 0.5,
+    "fit_intercept": false,
+    "p_hle_win": 0.43863830655114827,
+    "p_ig_win": 0.5613616934488517,
+    "bootstrap_p05": 0.37192616216426655,
+    "bootstrap_p50": 0.4422063129816685,
+    "bootstrap_p95": 0.5156129858484518,
+    "holdout_metrics": {
+      "n": 72,
+      "positives": 33,
+      "accuracy": 0.4722222222222222,
+      "brier": 0.25520692950647633,
+      "log_loss": 0.7033816168171034,
+      "auc": 0.4941724941724942,
+      "mean_prediction": 0.49691738242164935
+    }
+  },
+  "model_range": {
+    "min_p_hle": 0.43863830655114827,
+    "max_p_hle": 0.5,
+    "models": {
+      "M0_coinflip": 0.5,
+      "M1_win_rate": 0.4975,
+      "M2_core4": 0.4558,
+      "M3_core5": 0.4386,
+      "M4_sensitivity_8": 0.4463
+    }
+  },
+  "baseline": {
+    "coinflip_brier": 0.25,
+    "coinflip_log_loss": 0.6931471805599453
+  },
+  "calibration": {
+    "holdout_primary": [
+      {
+        "sample": "holdout_primary_core5",
+        "bin": "<0.40",
+        "n": 13,
+        "observed": 0.23076923076923078,
+        "mean_pred": 0.3505749776593245,
+        "abs_error": 0.11980574689009371
+      },
+      {
+        "sample": "holdout_primary_core5",
+        "bin": "0.40-0.45",
+        "n": 7,
+        "observed": 0.7142857142857143,
+        "mean_pred": 0.4218882995819174,
+        "abs_error": 0.2923974147037969
+      },
+      {
+        "sample": "holdout_primary_core5",
+        "bin": "0.45-0.50",
+        "n": 15,
+        "observed": 0.6,
+        "mean_pred": 0.47589498701131117,
+        "abs_error": 0.12410501298868881
+      },
+      {
+        "sample": "holdout_primary_core5",
+        "bin": "0.50-0.55",
+        "n": 16,
+        "observed": 0.4375,
+        "mean_pred": 0.5251936265221848,
+        "abs_error": 0.08769362652218482
+      },
+      {
+        "sample": "holdout_primary_core5",
+        "bin": "0.55-0.60",
+        "n": 11,
+        "observed": 0.45454545454545453,
+        "mean_pred": 0.571688795485164,
+        "abs_error": 0.11714334093970952
+      },
+      {
+        "sample": "holdout_primary_core5",
+        "bin": ">0.60",
+        "n": 10,
+        "observed": 0.4,
+        "mean_pred": 0.6437259147852682,
+        "abs_error": 0.24372591478526817
+      }
+    ],
+    "oof_primary": [
+      {
+        "sample": "oof_primary_core5",
+        "bin": "<0.40",
+        "n": 22,
+        "observed": 0.4090909090909091,
+        "mean_pred": 0.3470903493824467,
+        "abs_error": 0.06200055970846241
+      },
+      {
+        "sample": "oof_primary_core5",
+        "bin": "0.40-0.45",
+        "n": 18,
+        "observed": 0.6666666666666666,
+        "mean_pred": 0.4250947867409385,
+        "abs_error": 0.24157187992572815
+      },
+      {
+        "sample": "oof_primary_core5",
+        "bin": "0.45-0.50",
+        "n": 28,
+        "observed": 0.6785714285714286,
+        "mean_pred": 0.47407702772769583,
+        "abs_error": 0.20449440084373277
+      },
+      {
+        "sample": "oof_primary_core5",
+        "bin": "0.50-0.55",
+        "n": 30,
+        "observed": 0.4,
+        "mean_pred": 0.5250586184927041,
+        "abs_error": 0.12505861849270405
+      },
+      {
+        "sample": "oof_primary_core5",
+        "bin": "0.55-0.60",
+        "n": 22,
+        "observed": 0.45454545454545453,
+        "mean_pred": 0.5725301912508124,
+        "abs_error": 0.11798473670535786
+      },
+      {
+        "sample": "oof_primary_core5",
+        "bin": ">0.60",
+        "n": 25,
+        "observed": 0.6,
+        "mean_pred": 0.6685786302132726,
+        "abs_error": 0.0685786302132726
+      }
+    ]
+  },
+  "observed_blue_side_win_rate": 0.5459770114942529,
+  "headline": "HLE 43.9% vs IG 56.1% under the primary side-neutral model; holdout discrimination is weak (AUC near 0.50), so treat the match as close to a coin flip.",
+  "caveats": [
+    "The model is trained on 174 intra-Worlds games from a partial 2026 sample.",
+    "Features are highly collinear (0.83-0.94 among win rate, gold diff, kill diff and objectives).",
+    "The holdout AUC is near 0.50 and Brier/log loss are not better than a coin flip.",
+    "The target side (blue/red) is not confirmed; the primary model is side-neutral.",
+    "GD@10 is a proxy for GD@15 because the API does not expose GD@15.",
+    "Event-level objective rates are stage aggregates, not game-level features."
+  ]
+}

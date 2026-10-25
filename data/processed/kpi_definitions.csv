@@ -1,0 +1,24 @@
+﻿metric,definition,formula,direction
+win_rate,Share of games won in the window.,wins / games,Higher is better
+gd10,"Average gold difference at 10 minutes, summed over five players. Proxy for GD@15, which the API does not expose.",mean(sum(player gxd10)),Higher is better
+gold_diff,Average final gold difference.,mean(team gold - opponent gold),Higher is better
+kd_diff,Average kill differential.,mean(kills - deaths),Higher is better
+objective_score,Composite objective differential.,mean(tower_diff + dragon_diff + 2 x baron_diff),Higher is better
+first_blood_rate,Share of games in which the team secured first blood.,games with first blood / games,Higher is better
+duration_min,Average game duration in minutes.,mean(game duration / 60),Context only
+kills,Average kills per game.,mean(kills),Context only
+deaths,Average deaths per game.,mean(deaths),Lower is better
+towers,Average towers destroyed per game.,mean(towers),Higher is better
+dragons,Average dragons secured per game.,mean(dragons),Higher is better
+barons,Average barons secured per game.,mean(barons),Higher is better
+sos,Strength of schedule: average pre-game 10-game win rate of the previous 10 opponents.,mean(opponent pre-game wr_10),Higher means tougher schedule
+rest_days,Days between the team's last recorded game and the target match start.,(match_start - last_game) / 1 day,Context only
+form_index_last10,"Descriptive composite of last-10 win rate, gold diff, kill diff and objective score.",mean of z-scores,Higher is better
+event_gspd_pct,Oracle's Elixir gold share percentage difference for the event.,event GSPD,Higher is better
+event_egr,Oracle's Elixir EGR rating for the event.,event EGR,Higher is better
+event_mlr,Oracle's Elixir MLR rating for the event.,event MLR,Higher is better
+event_first_blood_pct,Share of event games with first blood.,event FB%,Higher is better
+event_first_tower_pct,Share of event games with first tower.,event FT%,Higher is better
+event_first_dragon_pct,Share of event games with first dragon.,event FD%,Higher is better
+event_dragon_pct,Event dragon control percentage.,event DRG%,Higher is better
+event_baron_pct,Event baron control percentage.,event BN%,Higher is better

@@ -1,0 +1,180 @@
+{
+  "collected_at_utc": "2026-10-25T16:25:32.618067+00:00",
+  "finished_at_utc": "2026-10-25T16:26:06.811059+00:00",
+  "collection_cutoff_utc": "2026-10-25T16:20:00Z",
+  "target_match": {
+    "match_id": "115660540726095045",
+    "team_a": "Hanwha Life Esports",
+    "team_b": "Invictus Gaming",
+    "upcoming_record": {
+      "matchId": "115660540726095045",
+      "league": "WLDs",
+      "leagueName": "World Championship",
+      "team1Id": "Hanwha Life Esports",
+      "team1Name": "Hanwha Life Esports",
+      "team1Code": "HLE",
+      "team1Logo": "100205573496804586Alternative.png",
+      "team2Id": "Invictus Gaming",
+      "team2Name": "Invictus Gaming",
+      "team2Code": "iG",
+      "team2Logo": "99566404848691211Alternative.png",
+      "startTime": "2026-10-25T17:00:00.000Z",
+      "seriesType": "bestOf1",
+      "blockName": "Swiss, Day 3",
+      "state": "unstarted"
+    }
+  },
+  "sources": {
+    "upcoming": {
+      "endpoint": "https://api.oracleselixir.com/matches/upcoming",
+      "records": 8
+    },
+    "team_game_lists": {
+      "Hanwha Life Esports": {
+        "source": "cache",
+        "games": 50
+      },
+      "Gen.G": {
+        "source": "cache",
+        "games": 50
+      },
+      "T1": {
+        "source": "cache",
+        "games": 50
+      },
+      "Dplus Kia": {
+        "source": "cache",
+        "games": 50
+      },
+      "Anyone's Legend": {
+        "source": "cache",
+        "games": 50
+      },
+      "Bilibili Gaming": {
+        "source": "cache",
+        "games": 50
+      },
+      "Top Esports": {
+        "source": "cache",
+        "games": 50
+      },
+      "Invictus Gaming": {
+        "source": "cache",
+        "games": 50
+      },
+      "Team Liquid": {
+        "source": "cache",
+        "games": 50
+      },
+      "LYON (2024 American Team)": {
+        "source": "cache",
+        "games": 50
+      },
+      "G2 Esports": {
+        "source": "cache",
+        "games": 50
+      },
+      "Movistar KOI": {
+        "source": "cache",
+        "games": 50
+      },
+      "Team Secret Whales": {
+        "source": "cache",
+        "games": 50
+      },
+      "CTBC Flying Oyster": {
+        "source": "cache",
+        "games": 50
+      },
+      "Karmine Corp": {
+        "source": "cache",
+        "games": 50
+      },
+      "LØS": {
+        "source": "cache",
+        "games": 50
+      }
+    },
+    "team_event_stats": {
+      "Hanwha Life Esports": {
+        "source": "https://api.oracleselixir.com/teams/statsBySplit/Hanwha%20Life%20Esports",
+        "events": 47
+      },
+      "Gen.G": {
+        "source": "https://api.oracleselixir.com/teams/statsBySplit/Gen.G",
+        "events": 58
+      },
+      "T1": {
+        "source": "https://api.oracleselixir.com/teams/statsBySplit/T1",
+        "events": 55
+      },
+      "Dplus Kia": {
+        "source": "https://api.oracleselixir.com/teams/statsBySplit/Dplus%20Kia",
+        "events": 64
+      },
+      "Anyone's Legend": {
+        "source": "https://api.oracleselixir.com/teams/statsBySplit/Anyone%27s%20Legend",
+        "events": 32
+      },
+      "Bilibili Gaming": {
+        "source": "https://api.oracleselixir.com/teams/statsBySplit/Bilibili%20Gaming",
+        "events": 59
+      },
+      "Top Esports": {
+        "source": "https://api.oracleselixir.com/teams/statsBySplit/Top%20Esports",
+        "events": 63
+      },
+      "Invictus Gaming": {
+        "source": "https://api.oracleselixir.com/teams/statsBySplit/Invictus%20Gaming",
+        "events": 93
+      },
+      "Team Liquid": {
+        "source": "https://api.oracleselixir.com/teams/statsBySplit/Team%20Liquid",
+        "events": 70
+      },
+      "LYON (2024 American Team)": {
+        "source": "https://api.oracleselixir.com/teams/statsBySplit/LYON%20%282024%20American%20Team%29",
+        "events": 13
+      },
+      "G2 Esports": {
+        "source": "https://api.oracleselixir.com/teams/statsBySplit/G2%20Esports",
+        "events": 83
+      },
+      "Movistar KOI": {
+        "source": "https://api.oracleselixir.com/teams/statsBySplit/Movistar%20KOI",
+        "events": 56
+      },
+      "Team Secret Whales": {
+        "source": "https://api.oracleselixir.com/teams/statsBySplit/Team%20Secret%20Whales",
+        "events": 16
+      },
+      "CTBC Flying Oyster": {
+        "source": "https://api.oracleselixir.com/teams/statsBySplit/CTBC%20Flying%20Oyster",
+        "events": 31
+      },
+      "Karmine Corp": {
+        "source": "https://api.oracleselixir.com/teams/statsBySplit/Karmine%20Corp",
+        "events": 40
+      },
+      "LØS": {
+        "source": "https://api.oracleselixir.com/teams/statsBySplit/L%C3%98S",
+        "events": 20
+      }
+    },
+    "game_details": {
+      "count": 636,
+      "endpoint_template": "https://api.oracleselixir.com/games/singleGame/{oe_game_id}"
+    }
+  },
+  "counts": {
+    "unique_games": 636,
+    "eligible_games": 636,
+    "game_details": 636
+  },
+  "notes": [
+    "Oracle's Elixir CSV download was unavailable (Google Drive quota exceeded).",
+    "Data was collected through the public OE API used by oracleselixir.com.",
+    "All predictive features are restricted to games starting before the cutoff.",
+    "The target match had state 'unstarted' when this manifest was written."
+  ]
+}

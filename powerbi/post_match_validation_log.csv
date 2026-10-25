@@ -1,0 +1,2 @@
+﻿match_id,match_start_utc,team_a,team_b,predicted_p_hle,predicted_p_ig,data_cutoff_utc,actual_winner,actual_hle_win,hle_side,patch,duration_min,brier_score,log_loss,correct_pick,result_source,scored_at_utc,notes
+115660540726095045,2026-10-25T17:00:00Z,Hanwha Life Esports,Invictus Gaming,0.43863830655114827,0.5613616934488517,2026-10-25T16:20:00Z,,,,,,,,,,,Pending result; prediction was generated before the scheduled start.

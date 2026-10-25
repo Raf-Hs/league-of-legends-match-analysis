@@ -1,0 +1,10 @@
+﻿scenario,p_hle,p_ig,note
+coin_flip,0.5,0.5,No-information baseline
+primary_core5,0.43863830655114827,0.5613616934488517,Primary side-neutral 5-feature model
+core4,0.45577336345665376,0.5442266365433462,"Core 4 features, no objective composite"
+sensitivity_8,0.44626537910155684,0.5537346208984432,8-feature sensitivity model
+win_rate_only,0.49745157854270633,0.5025484214572937,Single-feature win-rate baseline
+primary_if_hle_blue,0.48443972171880445,0.5155602782811955,Adds observed sample blue-side rate (54.6%) as a prior
+primary_if_hle_red,0.3938590856315815,0.6061409143684184,Adds observed sample red-side rate (45.4%) as a prior
+neutralise_ig_endgame_edges,0.4789231296680365,0.5210768703319635,Sets end-game gold diff and objective composite differences to zero
+neutralise_hle_early_edge,0.45708915189283983,0.5429108481071602,Sets GD@10 difference to zero

@@ -1,0 +1,15 @@
+# Normalize line endings so the repo behaves the same on Windows and Linux.
+* text=auto eol=lf
+
+# Data artefacts must stay byte-stable (they are UTF-8 with BOM from pandas).
+*.csv -text
+*.json -text
+*.json.gz binary
+*.png binary
+
+# Python
+*.py text eol=lf
+
+# Docs
+*.md text eol=lf
+*.txt text eol=lf

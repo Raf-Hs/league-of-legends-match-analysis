@@ -1,0 +1,23 @@
+{
+  "generated_at_utc": "2026-10-25T23:31:45.767479+00:00",
+  "target_start_utc": "2026-10-25T17:00:00Z",
+  "teams": 16,
+  "target_features": {
+    "wr_10_diff": 0.0,
+    "gd10_10_diff": 745.6,
+    "gold_diff_10_diff": -1654.7,
+    "kd_diff_10_diff": 0.5000000000000002,
+    "obj_10_diff": -2.0,
+    "fb_rate_10_diff": 0.6,
+    "duration_10_diff": -1.8859999999999957,
+    "sos_10_diff": 0.039999999999999925,
+    "hle_last_game_utc": "2026-10-24T22:24:48+00:00",
+    "ig_last_game_utc": "2026-10-24T21:18:13+00:00",
+    "hle_rest_days": 0.7744444444444445,
+    "ig_rest_days": 0.8206828703703704,
+    "hle_gd10_games": 10,
+    "ig_gd10_games": 10
+  },
+  "hle_form_rank": 14,
+  "ig_form_rank": 12
+}

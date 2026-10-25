@@ -1,0 +1,35 @@
+﻿team,team_code,window,metric,value,definition
+Hanwha Life Esports,HLE,last10,wins,5.0,
+Hanwha Life Esports,HLE,last10,losses,5.0,
+Hanwha Life Esports,HLE,last10,win_rate,0.5,Share of games won in the window.
+Hanwha Life Esports,HLE,last10,gd10,202.0,"Average gold difference at 10 minutes, summed over five players. Proxy for GD@15, which the API does not expose."
+Hanwha Life Esports,HLE,last10,gd10_games,10.0,
+Hanwha Life Esports,HLE,last10,gold_diff,-898.1,Average final gold difference.
+Hanwha Life Esports,HLE,last10,kd_diff,-1.7,Average kill differential.
+Hanwha Life Esports,HLE,last10,objective_score,0.6,Composite objective differential.
+Hanwha Life Esports,HLE,last10,first_blood_rate,0.7,Share of games in which the team secured first blood.
+Hanwha Life Esports,HLE,last10,duration_min,31.755000000000003,Average game duration in minutes.
+Hanwha Life Esports,HLE,last10,kills,12.7,Average kills per game.
+Hanwha Life Esports,HLE,last10,deaths,14.6,Average deaths per game.
+Hanwha Life Esports,HLE,last10,towers,6.4,Average towers destroyed per game.
+Hanwha Life Esports,HLE,last10,dragons,2.2,Average dragons secured per game.
+Hanwha Life Esports,HLE,last10,barons,0.8,Average barons secured per game.
+Hanwha Life Esports,HLE,last10,sos,0.6,Strength of schedule: average pre-game 10-game win rate of the previous 10 opponents.
+Hanwha Life Esports,HLE,last10,rest_days,0.7744444444444445,Days between the team's last recorded game and the target match start.
+Invictus Gaming,IG,last10,wins,5.0,
+Invictus Gaming,IG,last10,losses,5.0,
+Invictus Gaming,IG,last10,win_rate,0.5,Share of games won in the window.
+Invictus Gaming,IG,last10,gd10,-543.6,"Average gold difference at 10 minutes, summed over five players. Proxy for GD@15, which the API does not expose."
+Invictus Gaming,IG,last10,gd10_games,10.0,
+Invictus Gaming,IG,last10,gold_diff,756.6,Average final gold difference.
+Invictus Gaming,IG,last10,kd_diff,-2.2,Average kill differential.
+Invictus Gaming,IG,last10,objective_score,2.6,Composite objective differential.
+Invictus Gaming,IG,last10,first_blood_rate,0.1,Share of games in which the team secured first blood.
+Invictus Gaming,IG,last10,duration_min,33.641,Average game duration in minutes.
+Invictus Gaming,IG,last10,kills,14.8,Average kills per game.
+Invictus Gaming,IG,last10,deaths,17.2,Average deaths per game.
+Invictus Gaming,IG,last10,towers,6.4,Average towers destroyed per game.
+Invictus Gaming,IG,last10,dragons,2.5,Average dragons secured per game.
+Invictus Gaming,IG,last10,barons,1.2,Average barons secured per game.
+Invictus Gaming,IG,last10,sos,0.56,Strength of schedule: average pre-game 10-game win rate of the previous 10 opponents.
+Invictus Gaming,IG,last10,rest_days,0.8206828703703704,Days between the team's last recorded game and the target match start.

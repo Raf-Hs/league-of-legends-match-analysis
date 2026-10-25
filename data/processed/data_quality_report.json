@@ -1,0 +1,61 @@
+{
+  "generated_at_utc": "2026-10-25T23:31:40.689530+00:00",
+  "source": "Oracle's Elixir public API (see data/raw/collection_manifest.json)",
+  "collection_cutoff_utc": "2026-10-25T16:20:00Z",
+  "checks": {
+    "games_with_invalid_winner_count": 0,
+    "fact_rows": 1272,
+    "dim_rows": 636,
+    "fact_duplicate_team_game": 0,
+    "fact_games_without_pair": 0,
+    "missing_duration": 0,
+    "missing_gold": 0,
+    "missing_gd10": 84,
+    "gd10_with_fewer_than_5_players": 84,
+    "target_match_present": 0,
+    "max_date_utc": "2026-10-25 00:34:10+00:00",
+    "min_date_utc": "2026-05-07 10:49:24+00:00",
+    "target_start_utc": "2026-10-25 17:00:00+00:00",
+    "first_blood_consistency": 0
+  },
+  "missingness_fact": {
+    "duration_min": 0.0,
+    "gold": 0.0,
+    "gold_diff": 0.0,
+    "gd10": 0.066,
+    "kills": 0.0,
+    "deaths": 0.0,
+    "towers": 0.0,
+    "dragons": 0.0,
+    "barons": 0.0,
+    "first_blood": 0.0,
+    "opp_wr_10": 0.1321
+  },
+  "model_sample": {
+    "games": 222,
+    "teams": [
+      "Anyone's Legend",
+      "Bilibili Gaming",
+      "CTBC Flying Oyster",
+      "Dplus Kia",
+      "G2 Esports",
+      "Gen.G",
+      "Hanwha Life Esports",
+      "Invictus Gaming",
+      "Karmine Corp",
+      "LYON (2024 American Team)",
+      "L\u00d8S",
+      "Movistar KOI",
+      "T1",
+      "Team Liquid",
+      "Team Secret Whales",
+      "Top Esports"
+    ],
+    "date_min": "2026-05-25 15:59:31",
+    "date_max": "2026-10-25 00:34:10",
+    "games_with_min_5_prior": 177,
+    "games_with_min_8_prior": 156,
+    "games_with_min_10_prior": 147
+  },
+  "head_to_head_games": 0
+}
