@@ -100,7 +100,8 @@ league-of-legends-match-analysis/
 │   ├── model_card.md
 │   ├── data_quality_log.md
 │   ├── post_match_validation_plan.md
-│   └── validated_forecast_hle_vs_ig.md
+│   ├── validated_forecast_hle_vs_ig.md
+│   └── project_overview.md
 ├── requirements.txt
 └── README.md
 ```
@@ -252,6 +253,7 @@ Power BI Desktop.
 - [`reports/executive_report.md`](reports/executive_report.md) — decision-oriented summary of the current fixture.
 - [`reports/model_card.md`](reports/model_card.md) — intended use, performance, limitations, maintenance plan.
 - [`reports/validated_forecast_hle_vs_ig.md`](reports/validated_forecast_hle_vs_ig.md) — the pre-registered forecast, the observed result and the score of the first fixture.
+- [`reports/project_overview.md`](reports/project_overview.md) — **study guide**: what was built, why, how the processes work and what the findings mean, end to end.
 - [`reports/data_quality_log.md`](reports/data_quality_log.md) — sources, target verification, cleaning rules, missingness, defects and their fixes, audit trail.
 - [`reports/post_match_validation_plan.md`](reports/post_match_validation_plan.md) — the pre-registered rules for scoring every fixture.
 - `data/processed/data_quality_report.json` — the machine-readable twin of the data-quality log, regenerated on every pipeline run.
