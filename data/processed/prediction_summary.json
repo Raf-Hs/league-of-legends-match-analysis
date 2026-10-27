@@ -1,24 +1,24 @@
 {
-  "generated_at_utc": "2026-10-25T23:34:15.455015+00:00",
+  "generated_at_utc": "2026-10-27T00:50:55.965865+00:00",
   "target_match": {
-    "team_a": "Hanwha Life Esports",
+    "team_a": "LYON (2024 American Team)",
     "team_b": "Invictus Gaming",
-    "code_a": "HLE",
+    "code_a": "LYON",
     "code_b": "IG",
-    "start_utc": "2026-10-25T17:00:00Z",
-    "collection_cutoff_utc": "2026-10-25T16:20:00Z"
+    "start_utc": "2026-10-28T23:00:00Z",
+    "collection_cutoff_utc": "2026-10-27T00:00:00Z"
   },
   "sample": {
-    "modelling_games": 174,
-    "train_games": 102,
-    "test_games": 72,
+    "modelling_games": 179,
+    "train_games": 94,
+    "test_games": 85,
     "train_date_min": "2026-06-30 09:55:43+00:00",
     "train_date_max": "2026-08-30 21:03:08+00:00",
     "test_date_min": "2026-09-02 08:11:08+00:00",
-    "test_date_max": "2026-10-25 00:34:10+00:00",
+    "test_date_max": "2026-10-26 21:54:37+00:00",
     "split_utc": "2026-09-01 00:00:00+00:00",
-    "train_team_a_win_rate": 0.6078431372549019,
-    "test_team_a_win_rate": 0.4583333333333333
+    "train_team_a_win_rate": 0.6170212765957447,
+    "test_team_a_win_rate": 0.49411764705882355
   },
   "primary_model": {
     "name": "M3_core5",
@@ -31,146 +31,194 @@
     ],
     "regularization_C": 0.5,
     "fit_intercept": false,
-    "p_hle_win": 0.43863830655114827,
-    "p_ig_win": 0.5613616934488517,
-    "bootstrap_p05": 0.37192616216426655,
-    "bootstrap_p50": 0.4422063129816685,
-    "bootstrap_p95": 0.5156129858484518,
+    "p_team_a_win": 0.41379564098498645,
+    "p_team_b_win": 0.5862043590150136,
+    "bootstrap_p05": 0.3349162368176415,
+    "bootstrap_p50": 0.4114519905352496,
+    "bootstrap_p95": 0.48893062066735776,
     "holdout_metrics": {
-      "n": 72,
-      "positives": 33,
-      "accuracy": 0.4722222222222222,
-      "brier": 0.25520692950647633,
-      "log_loss": 0.7033816168171034,
-      "auc": 0.4941724941724942,
-      "mean_prediction": 0.49691738242164935
+      "n": 85,
+      "positives": 42,
+      "accuracy": 0.4235294117647059,
+      "brier": 0.2594686266604615,
+      "log_loss": 0.7120724666911598,
+      "auc": 0.4772978959025471,
+      "mean_prediction": 0.5018953038134546
     }
   },
   "model_range": {
-    "min_p_hle": 0.43863830655114827,
-    "max_p_hle": 0.5,
+    "min_p_team_a": 0.41379564098498645,
+    "max_p_team_a": 0.5,
     "models": {
       "M0_coinflip": 0.5,
-      "M1_win_rate": 0.4975,
-      "M2_core4": 0.4558,
-      "M3_core5": 0.4386,
-      "M4_sensitivity_8": 0.4463
+      "M1_win_rate": 0.4976,
+      "M2_core4": 0.4259,
+      "M3_core5": 0.4138,
+      "M4_sensitivity_8": 0.4155
     }
   },
   "baseline": {
     "coinflip_brier": 0.25,
-    "coinflip_log_loss": 0.6931471805599453
+    "coinflip_log_loss": 0.6931471805599454
   },
   "calibration": {
     "holdout_primary": [
       {
         "sample": "holdout_primary_core5",
         "bin": "<0.40",
-        "n": 13,
-        "observed": 0.23076923076923078,
-        "mean_pred": 0.3505749776593245,
-        "abs_error": 0.11980574689009371
+        "n": 15,
+        "observed": 0.3333333333333333,
+        "mean_pred": 0.34083123616041483,
+        "abs_error": 0.007497902827081515
       },
       {
         "sample": "holdout_primary_core5",
         "bin": "0.40-0.45",
-        "n": 7,
-        "observed": 0.7142857142857143,
-        "mean_pred": 0.4218882995819174,
-        "abs_error": 0.2923974147037969
+        "n": 8,
+        "observed": 0.75,
+        "mean_pred": 0.42136319084370266,
+        "abs_error": 0.32863680915629734
       },
       {
         "sample": "holdout_primary_core5",
         "bin": "0.45-0.50",
-        "n": 15,
-        "observed": 0.6,
-        "mean_pred": 0.47589498701131117,
-        "abs_error": 0.12410501298868881
+        "n": 17,
+        "observed": 0.7058823529411765,
+        "mean_pred": 0.47791895983594435,
+        "abs_error": 0.22796339310523217
       },
       {
         "sample": "holdout_primary_core5",
         "bin": "0.50-0.55",
-        "n": 16,
-        "observed": 0.4375,
-        "mean_pred": 0.5251936265221848,
-        "abs_error": 0.08769362652218482
+        "n": 18,
+        "observed": 0.3888888888888889,
+        "mean_pred": 0.5255508856670215,
+        "abs_error": 0.13666199677813257
       },
       {
         "sample": "holdout_primary_core5",
         "bin": "0.55-0.60",
-        "n": 11,
-        "observed": 0.45454545454545453,
-        "mean_pred": 0.571688795485164,
-        "abs_error": 0.11714334093970952
+        "n": 13,
+        "observed": 0.38461538461538464,
+        "mean_pred": 0.5725891331933675,
+        "abs_error": 0.18797374857798282
       },
       {
         "sample": "holdout_primary_core5",
         "bin": ">0.60",
-        "n": 10,
-        "observed": 0.4,
-        "mean_pred": 0.6437259147852682,
-        "abs_error": 0.24372591478526817
+        "n": 14,
+        "observed": 0.5,
+        "mean_pred": 0.6535378403040422,
+        "abs_error": 0.15353784030404216
       }
     ],
     "oof_primary": [
       {
         "sample": "oof_primary_core5",
         "bin": "<0.40",
-        "n": 22,
-        "observed": 0.4090909090909091,
-        "mean_pred": 0.3470903493824467,
-        "abs_error": 0.06200055970846241
+        "n": 27,
+        "observed": 0.4444444444444444,
+        "mean_pred": 0.34372976966511143,
+        "abs_error": 0.10071467477933299
       },
       {
         "sample": "oof_primary_core5",
         "bin": "0.40-0.45",
-        "n": 18,
-        "observed": 0.6666666666666666,
-        "mean_pred": 0.4250947867409385,
-        "abs_error": 0.24157187992572815
+        "n": 19,
+        "observed": 0.6842105263157895,
+        "mean_pred": 0.42259626145984525,
+        "abs_error": 0.26161426485594425
       },
       {
         "sample": "oof_primary_core5",
         "bin": "0.45-0.50",
-        "n": 28,
-        "observed": 0.6785714285714286,
-        "mean_pred": 0.47407702772769583,
-        "abs_error": 0.20449440084373277
+        "n": 26,
+        "observed": 0.6923076923076923,
+        "mean_pred": 0.4757308649529795,
+        "abs_error": 0.2165768273547128
       },
       {
         "sample": "oof_primary_core5",
         "bin": "0.50-0.55",
-        "n": 30,
-        "observed": 0.4,
-        "mean_pred": 0.5250586184927041,
-        "abs_error": 0.12505861849270405
+        "n": 31,
+        "observed": 0.41935483870967744,
+        "mean_pred": 0.5309278953498026,
+        "abs_error": 0.11157305664012512
       },
       {
         "sample": "oof_primary_core5",
         "bin": "0.55-0.60",
-        "n": 22,
-        "observed": 0.45454545454545453,
-        "mean_pred": 0.5725301912508124,
-        "abs_error": 0.11798473670535786
+        "n": 17,
+        "observed": 0.5294117647058824,
+        "mean_pred": 0.5715609996238734,
+        "abs_error": 0.04214923491799105
       },
       {
         "sample": "oof_primary_core5",
         "bin": ">0.60",
         "n": 25,
-        "observed": 0.6,
-        "mean_pred": 0.6685786302132726,
-        "abs_error": 0.0685786302132726
+        "observed": 0.56,
+        "mean_pred": 0.6480618272190937,
+        "abs_error": 0.08806182721909361
       }
     ]
   },
-  "observed_blue_side_win_rate": 0.5459770114942529,
-  "headline": "HLE 43.9% vs IG 56.1% under the primary side-neutral model; holdout discrimination is weak (AUC near 0.50), so treat the match as close to a coin flip.",
+  "observed_blue_side_win_rate": 0.5586592178770949,
+  "fixtures": [
+    {
+      "match_id": 115660540726095061,
+      "team_a": "Movistar KOI",
+      "team_b": "T1",
+      "team_a_code": "MKOI",
+      "team_b_code": "T1",
+      "start_utc": "2026-10-28T20:00:00Z",
+      "series_type": "bestOf3",
+      "block": "Swiss, Day 5",
+      "p_team_a_game": 0.5092415422058233,
+      "p_team_b_game": 0.4907584577941767,
+      "bootstrap_p05": 0.4161190736020743,
+      "bootstrap_p50": 0.5138022376278335,
+      "bootstrap_p95": 0.6007922284604289,
+      "p_team_a_bo3": 0.5138607347405362,
+      "p_team_b_bo3": 0.48613926525946394,
+      "p_team_a_bo3_low": 0.3753589844456929,
+      "p_team_a_bo3_high": 0.6491404314130113,
+      "pick": "MKOI"
+    },
+    {
+      "match_id": 115660540726095065,
+      "team_a": "LYON (2024 American Team)",
+      "team_b": "Invictus Gaming",
+      "team_a_code": "LYON",
+      "team_b_code": "IG",
+      "start_utc": "2026-10-28T23:00:00Z",
+      "series_type": "bestOf3",
+      "block": "Swiss, Day 5",
+      "p_team_a_game": 0.41379564098498645,
+      "p_team_b_game": 0.5862043590150136,
+      "bootstrap_p05": 0.3349162368176415,
+      "bootstrap_p50": 0.4114519905352496,
+      "bootstrap_p95": 0.48893062066735776,
+      "p_team_a_bo3": 0.3719746636797043,
+      "p_team_b_bo3": 0.6280253363202957,
+      "p_team_a_bo3_low": 0.2613722948895839,
+      "p_team_a_bo3_high": 0.48339864368879043,
+      "pick": "IG"
+    }
+  ],
+  "target_series_probability": {
+    "p_team_a_bo3": 0.3719746636797043,
+    "p_team_b_bo3": 0.6280253363202957,
+    "assumption": "Per-game probability converted to a best-of-3 series under the assumption that games are independent and the per-game probability is constant (no side or draft adaptation)."
+  },
+  "headline": "LYON 41.4% vs IG 58.6% per game under the primary side-neutral model; 37.2% / 62.8% if the series is played best-of-3. Holdout discrimination is weak (AUC near 0.50), so treat the fixture as close to a coin flip.",
   "caveats": [
-    "The model is trained on 174 intra-Worlds games from a partial 2026 sample.",
-    "Features are highly collinear (0.83-0.94 among win rate, gold diff, kill diff and objectives).",
+    "The model is trained on 179 intra-Worlds games from a partial 2026 sample.",
+    "Features are highly collinear (up to 0.94 between win rate, gold diff, kill diff and objectives).",
     "The holdout AUC is near 0.50 and Brier/log loss are not better than a coin flip.",
     "The target side (blue/red) is not confirmed; the primary model is side-neutral.",
     "GD@10 is a proxy for GD@15 because the API does not expose GD@15.",
-    "Event-level objective rates are stage aggregates, not game-level features."
+    "Event-level objective rates are stage aggregates, not game-level features.",
+    "Best-of-3 series probabilities assume independent games with a constant per-game probability."
   ]
 }

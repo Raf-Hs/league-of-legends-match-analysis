@@ -34,16 +34,40 @@ OE_API_BASE = "https://api.oracleselixir.com"
 OE_API_KEY = (os.getenv("OE_API_KEY") or "").strip()
 OE_WEB_ORIGIN = "https://oracleselixir.com"
 
-# Data collection cutoff. The target match starts at 17:00 UTC on 2026-10-25.
-# Every game used as a feature must have started before this timestamp.
-COLLECTION_CUTOFF_UTC = "2026-10-25T16:20:00Z"
-TARGET_MATCH_START_UTC = "2026-10-25T17:00:00Z"
-TARGET_MATCH_ID = "115660540726095045"
+# Data collection cutoff. Every game used as a feature must have started
+# before this timestamp. The forecast is registered before the target match.
+COLLECTION_CUTOFF_UTC = "2026-10-27T00:00:00Z"
 
-TEAM_A = "Hanwha Life Esports"
-TEAM_A_CODE = "HLE"
+# Current target fixture: Worlds 2026, Swiss Day 5 (best of 3).
+TARGET_MATCH_START_UTC = "2026-10-28T23:00:00Z"
+TARGET_MATCH_ID = "115660540726095065"
+
+TEAM_A = "LYON (2024 American Team)"
+TEAM_A_CODE = "LYON"
 TEAM_B = "Invictus Gaming"
 TEAM_B_CODE = "IG"
+
+# Every fixture on the next match day, so the report can publish a full slate
+# instead of a single match. `match_id` comes from the Oracle's Elixir
+# /matches/upcoming feed.
+UPCOMING_FIXTURES = [
+    {
+        "match_id": "115660540726095061",
+        "team_a": "Movistar KOI",
+        "team_b": "T1",
+        "start_utc": "2026-10-28T20:00:00Z",
+        "series_type": "bestOf3",
+        "block": "Swiss, Day 5",
+    },
+    {
+        "match_id": "115660540726095065",
+        "team_a": "LYON (2024 American Team)",
+        "team_b": "Invictus Gaming",
+        "start_utc": "2026-10-28T23:00:00Z",
+        "series_type": "bestOf3",
+        "block": "Swiss, Day 5",
+    },
+]
 
 # Oracle's Elixir uses different display names in different endpoints. The
 # game-detail feed calls this team "LYON"; the team-stats endpoint uses the

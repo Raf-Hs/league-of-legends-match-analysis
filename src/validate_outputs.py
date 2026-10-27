@@ -37,6 +37,8 @@ REQUIRED_PROCESSED = [
     "match_kpis.csv",
     "target_match_features.csv",
     "target_model_input.csv",
+    "fixture_features.csv",
+    "fixture_predictions.csv",
     "team_event_stats.csv",
     "kpi_definitions.csv",
     "model_comparison.csv",
@@ -77,6 +79,9 @@ REQUIRED_POWERBI = [
     "FactFeatureContribution.csv",
     "FactScenario.csv",
     "FactPrediction.csv",
+    "FactFixturePrediction.csv",
+    "FactFixtureFeature.csv",
+    "FactValidationLog.csv",
     "DimMetric.csv",
 ]
 
@@ -138,10 +143,10 @@ def main() -> None:
     checks.append(("target match absent from model", (model["match_id"].astype(str) != str(TARGET_MATCH_ID)).all(), ""))
     checks.append(("model target match absent", not ((model["team_a"] == TEAM_A) & (model["team_b"] == TEAM_B)).any(), ""))
     checks.append(("target features not NaN", not pd.isna(target["wr_10_diff"]), ""))
-    p_hle = float(pred["primary_model"]["p_hle_win"])
-    p_ig = float(pred["primary_model"]["p_ig_win"])
-    checks.append(("probabilities sum to 1", abs(p_hle + p_ig - 1) < 1e-9, f"{p_hle:.6f} + {p_ig:.6f}"))
-    checks.append(("probability in [0,1]", 0 <= p_hle <= 1 and 0 <= p_ig <= 1, ""))
+    p_a = float(pred["primary_model"]["p_team_a_win"])
+    p_b = float(pred["primary_model"]["p_team_b_win"])
+    checks.append(("probabilities sum to 1", abs(p_a + p_b - 1) < 1e-9, f"{p_a:.6f} + {p_b:.6f}"))
+    checks.append(("probability in [0,1]", 0 <= p_a <= 1 and 0 <= p_b <= 1, ""))
     checks.append(("bootstrap interval ordered", pred["primary_model"]["bootstrap_p05"] <= pred["primary_model"]["bootstrap_p95"], ""))
     checks.append(("model sample >= 100", pred["sample"]["modelling_games"] >= 100, str(pred["sample"]["modelling_games"])))
 
@@ -153,6 +158,85 @@ def main() -> None:
             ", ".join(secrets) if secrets else "none found",
         )
     )
+
+    # --- Slate (upcoming fixtures) -------------------------------------
+    fixtures = pd.read_csv(PROCESSED_DIR / "fixture_predictions.csv", dtype={"match_id": str})
+    checks.append(("slate has at least one fixture", len(fixtures) >= 1, f"{len(fixtures)} rows"))
+    checks.append(
+        (
+            "target fixture absent from fact",
+            (fact["match_id"].astype(str) != str(TARGET_MATCH_ID)).all(),
+            "",
+        )
+    )
+    checks.append(
+        (
+            "slate per-game probabilities sum to 1",
+            bool(
+                (
+                    fixtures["p_team_a_game"] + fixtures["p_team_b_game"] - 1.0
+                ).abs().max()
+                < 1e-9
+            ),
+            "",
+        )
+    )
+    checks.append(
+        (
+            "slate series probabilities sum to 1",
+            bool(
+                (
+                    fixtures["p_team_a_bo3"] + fixtures["p_team_b_bo3"] - 1.0
+                ).abs().max()
+                < 1e-9
+            ),
+            "",
+        )
+    )
+    checks.append(
+        (
+            "slate probabilities in [0,1]",
+            bool(
+                (fixtures[["p_team_a_game", "p_team_b_game", "p_team_a_bo3"]].min().min() >= 0)
+                and (fixtures[["p_team_a_game", "p_team_b_game", "p_team_a_bo3"]].max().max() <= 1)
+            ),
+            "",
+        )
+    )
+
+    # --- Pre-registered validation log ---------------------------------
+    log_path = PROJECT_ROOT / "powerbi" / "post_match_validation_log.csv"
+    checks.append(("validation log exists", log_path.exists(), str(log_path)))
+    if log_path.exists():
+        vlog = pd.read_csv(log_path, dtype={"match_id": str})
+        checks.append(("validation log has rows", len(vlog) >= 1, f"{len(vlog)} rows"))
+        checks.append(
+            (
+                "validation log probabilities sum to 1",
+                bool(
+                    (
+                        vlog["predicted_p_team_a"] + vlog["predicted_p_team_b"] - 1.0
+                    ).abs().max()
+                    < 1e-6
+                ),
+                "",
+            )
+        )
+        scored = vlog[vlog["brier_score"].notna()]
+        checks.append(
+            (
+                "scored rows have a winner",
+                bool(scored.empty or scored["actual_winner"].notna().all()),
+                f"{len(scored)} scored",
+            )
+        )
+        checks.append(
+            (
+                "target fixture is pre-registered",
+                bool((vlog["match_id"].astype(str) == str(TARGET_MATCH_ID)).any()),
+                "",
+            )
+        )
 
     print("\nVALIDATION")
     print("-" * 78)

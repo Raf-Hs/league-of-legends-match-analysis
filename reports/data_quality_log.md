@@ -1,10 +1,10 @@
-# Data quality log — HLE vs IG, Worlds 2026 Swiss Day 3
+# Data quality log — Worlds 2026 Swiss stage
 
 **Scope:** every data asset used to produce the pre-match forecast for
-Hanwha Life Esports (HLE) vs Invictus Gaming (IG), Oracle's Elixir match
-`115660540726095045`.
+LYON (2024 American Team) vs Invictus Gaming (IG), Oracle's Elixir match
+`115660540726095065` (Worlds 2026 Swiss Day 5, best of 3).
 
-**Data cutoff:** 2026-10-25 16:20 UTC · **Match start:** 2026-10-25 17:00 UTC ·
+**Data cutoff:** 2026-10-27 00:00 UTC · **Match start:** 2026-10-28 23:00 UTC ·
 **Match state at collection:** `unstarted`.
 
 **Machine-readable source of truth:** `data/processed/data_quality_report.json`
@@ -18,10 +18,10 @@ Hanwha Life Esports (HLE) vs Invictus Gaming (IG), Oracle's Elixir match
 
 | Source | Endpoint / path | Volume | Captured |
 |---|---|---:|---|
-| Upcoming matches | `GET https://api.oracleselixir.com/matches/upcoming` | 8 records | 2026-10-25 16:25 UTC |
-| Team game lists | `GET /teams/gameDetails/{team}?beforeTime=…` | 16 teams × 50 games | 2026-10-25 16:25 UTC |
-| Game details | `GET /games/singleGame/{oe_game_id}` | 636 games (gzipped JSON) | 2026-10-25 16:26 UTC |
-| Team event aggregates | `GET /teams/statsBySplit/{team}` | 16 teams, 800 event rows | 2026-10-25 16:26 UTC |
+| Upcoming matches | `GET https://api.oracleselixir.com/matches/upcoming` | 6 records | 2026-10-27 00:20 UTC |
+| Team game lists | `GET /teams/gameDetails/{team}?beforeTime=…` | 16 teams × 50 games | 2026-10-27 00:20 UTC |
+| Game details | `GET /games/singleGame/{oe_game_id}` | 630 games (gzipped JSON) | 2026-10-27 00:22 UTC |
+| Team event aggregates | `GET /teams/statsBySplit/{team}` | 16 teams, 800 event rows | 2026-10-27 00:22 UTC |
 
 - Every request is logged in **`data/raw/collection_manifest.json`**, which
   records the endpoint, record count and cache/remote source for each call.
@@ -40,10 +40,10 @@ Hanwha Life Esports (HLE) vs Invictus Gaming (IG), Oracle's Elixir match
 
 Before any modelling, the target match was verified rather than assumed:
 
-- The match appears in `/matches/upcoming` with `matchId 115660540726095045`,
-  `team1Name "Hanwha Life Esports"`, `team2Name "Invictus Gaming"`,
-  `startTime 2026-10-25T17:00:00.000Z`, `seriesType "bestOf1"`,
-  `blockName "Swiss, Day 3"`, `state "unstarted"`.
+- The match appears in `/matches/upcoming` with `matchId 115660540726095065`,
+  `team1Name "LYON"`, `team2Name "Invictus Gaming"`,
+  `startTime 2026-10-28T23:00:00.000Z`, `seriesType "bestOf3"`,
+  `blockName "Swiss, Day 5"`, `state "unstarted"`.
 - The same fixture was cross-checked against Leaguepedia's match list. Both
   sources agree on the pairing, date and format.
 - The match was **explicitly excluded** during collection
@@ -61,26 +61,26 @@ Before any modelling, the target match was verified rather than assumed:
 | Layer | Rows | Notes |
 |---|---:|---|
 | Raw game-list entries | 800 | 16 teams × 50 games, with duplicates across teams |
-| Unique completed games | 636 | deduplicated by `oeGameId`; all started before the cutoff |
-| Fact: team-game | 1,272 | exactly two rows per game (blue + red mirror) |
-| Dimension: game | 636 | one row per game |
+| Unique completed games | 630 | deduplicated by `oeGameId`; all started before the cutoff |
+| Fact: team-game | 1,260 | exactly two rows per game (blue + red mirror) |
+| Dimension: game | 630 | one row per game |
 | Distinct teams in the fact | 57 | 16 Worlds teams + 41 opponents outside the cohort |
-| Model dataset (intra-Worlds) | 222 | both sides are Worlds 2026 participants |
-| Modelling sample | 174 | ≥5 prior games per side and complete features |
-| Train / test split | 102 / 72 | chronological split at 2026-09-01 00:00 UTC |
+| Model dataset (intra-Worlds) | 226 | both sides are Worlds 2026 participants |
+| Modelling sample | 179 | ≥5 prior games per side and complete features |
+| Train / test split | 94 / 85 | chronological split at 2026-09-01 00:00 UTC |
 
-Fact rows = 2 × 636, confirmed by the check "fact has two rows per game".
+Fact rows = 2 × 630, confirmed by the check "fact has two rows per game".
 
 ## 4. Cleaning rules applied
 
 | Rule | Implementation | Effect |
 |---|---|---|
-| One row per team per game | `build_dataset.build_fact` mirrors blue/red rows | 1,272 fact rows, 0 duplicates |
+| One row per team per game | `build_dataset.build_fact` mirrors blue/red rows | 1,260 fact rows, 0 duplicates |
 | Winner validation | exactly one `blue_win` flag per game | 0 games with an invalid winner count |
 | Unpaired games rejected | grouping check on `oe_game_id` | 0 unpaired games |
-| Strict time cutoff | `gameCreation < 2026-10-25T16:20:00Z` | latest game in the sample: 2026-10-25 00:34:10 UTC |
+| Strict time cutoff | `gameCreation < 2026-10-27T00:00:00Z` | latest game in the sample: 2026-10-26 21:54:37 UTC |
 | Target match removed | filter on `matchId` | 0 occurrences in fact, dimension and model tables |
-| Timezone handling | all timestamps parsed as UTC | min 2026-05-07, max 2026-10-25 |
+| Timezone handling | all timestamps parsed as UTC | min 2026-05-07, max 2026-10-26 |
 | First-blood consistency | both sides must not be credited | 0 games with two first-blood winners |
 | Team-name canonicalisation | `canonical_team()` in `src/config.py` | `LYON` → `LYON (2024 American Team)` |
 | Rolling-form alignment | rolling windows shifted one game back | no current-game information in any feature |
@@ -95,7 +95,7 @@ identities and silently drop out of the model sample.
 | | Games in the model dataset | Rows used for modelling |
 |---|---:|---:|
 | Before alias fix | 195 | — |
-| **After alias fix** | **222** | **174** (102 train / 72 test) |
+| **After alias fix** | **226** | **179** (94 train / 85 test) |
 
 The alias map lives in `src/config.py` (`TEAM_NAME_MAP`) and is applied to
 every team name before the fact table is built.
@@ -110,7 +110,7 @@ never edited.
 
 ## 5. Field-level missingness
 
-Measured on the 1,272-row team-game fact table:
+Measured on the 1,260-row team-game fact table:
 
 | Field | Missing | Rate | Handling |
 |---|---:|---:|---|
@@ -120,20 +120,20 @@ Measured on the 1,272-row team-game fact table:
 | `kills`, `deaths` | 0 | 0.0% | — |
 | `towers`, `dragons`, `barons` | 0 | 0.0% | — |
 | `first_blood` | 0 | 0.0% | — |
-| `gd10` | 84 | 6.6% | not imputed; rows dropped from the modelling frame |
-| `opp_wr_10` | 168 | 13.2% | not imputed; only used by the SOS sensitivity feature |
+| `gd10` | 81 | 6.4% | not imputed; rows dropped from the modelling frame |
+| `opp_wr_10` | 163 | 12.9% | not imputed; only used by the SOS sensitivity feature |
 
-**Why `gd10` is missing in 84 rows:** the API exposes per-player `gxd10` only
+**Why `gd10` is missing in 81 rows:** the API exposes per-player `gxd10` only
 when a player has a recorded 10-minute gold difference. The 84 affected rows
 are exactly the rows where fewer than five players expose `gxd10`
-(`gd10_with_fewer_than_5_players = 84`, identical to `missing_gd10 = 84`) —
+(`gd10_with_fewer_than_5_players = 81`, identical to `missing_gd10 = 81`) —
 for example games with a substitute or a very early surrender. The field is
 left null rather than filled with 0 or a carry-forward, because either
 substitution would fabricate early-game information.
 
 **Consequence for the model:** the modelling frame requires all eight candidate
 features to be present for every game, so the 48 games with any missing
-candidate are dropped (222 → 174). This is deliberately conservative: it
+candidate are dropped (226 → 179). This is deliberately conservative: it
 guarantees that the 4-, 5- and 8-feature specifications are compared on an
 identical sample. It also means the primary 5-feature model gives up games it
 could technically have used.
@@ -145,15 +145,15 @@ primary specification.
 
 ## 6. Mechanical validation results
 
-`python src/validate_outputs.py` → **56 / 56 checks passed**
+`python src/validate_outputs.py` → **71 / 71 checks passed**
 (`data/processed/validation_report.json`).
 
 | Check group | Result |
 |---|---|
-| 18 processed tables present | PASS |
+| 21 processed tables present | PASS |
 | 10 figures present | PASS |
-| 16 Power BI tables present | PASS |
-| Fact/dimension consistency (1,272 = 2 × 636) | PASS |
+| 19 Power BI tables present | PASS |
+| Fact/dimension consistency (1,260 = 2 × 630) | PASS |
 | No duplicate team-game rows | PASS |
 | No unpaired games | PASS |
 | Target match absent from fact, dimension and model | PASS |
@@ -161,6 +161,8 @@ primary specification.
 | Probabilities sum to 1 and lie in [0,1] | PASS |
 | Bootstrap interval correctly ordered (p05 ≤ p95) | PASS |
 | Modelling sample ≥ 100 games | PASS |
+| Slate probabilities and series probabilities sum to 1 | PASS |
+| Target fixture pre-registered in the validation log | PASS |
 | No hardcoded secrets in the source tree | PASS (check 56 scans every `.py` file for a literal key/token/secret) |
 
 Additional structural checks written by `build_dataset.py` and recorded in
@@ -172,14 +174,14 @@ rows.
 
 | Limitation | Evidence | Impact on the forecast |
 |---|---|---|
-| Partial season sample | teams seeded with their last 50 games, then expanded by opponents' lists (HLE 65 games, IG 50 in the union) | the union is not a complete league game graph; early-season games and some opponents are missing |
+| Partial season sample | teams seeded with their last 50 games, then expanded by opponents' lists (LYON 53 games, IG 50 in the union) | the union is not a complete league game graph; early-season games and some opponents are missing |
 | No head-to-head history | `head_to_head_games = 0` in the model dataset | the match must be forecast from form and opponent quality alone |
 | GD@15 unavailable | the API exposes `gxd10` only | GD@10 is used as a **labelled proxy**, never as GD@15 |
 | Event objective rates are stage aggregates | `FactTeamEventStat` comes from `/teams/statsBySplit` | FB%/FT%/FD%/DRG%/BN% are context only and never enter the model |
 | Target side unknown | no blue/red assignment published pre-match | the primary model is side-neutral; side is a scenario |
 | No draft, roster, patch or player-level features | not present in the source | early-game draft advantage is invisible to the model |
-| Small holdout | 72 games, 33 positives | AUC/Brier/log loss carry wide sampling error |
-| Distribution shift | train `team_a` win rate 60.8% vs test 45.8% | a large temporal shift that contributes to poor calibration |
+| Small holdout | 85 games, 42 positives | AUC/Brier/log loss carry wide sampling error |
+| Distribution shift | train `team_a` win rate 61.7% vs test 49.4% | a temporal shift that contributes to poor calibration |
 | API key dependency for refresh | key now read only from `OE_API_KEY` | `--refresh` needs the key in the environment; the cached path does not |
 
 ## 8. Audit trail
@@ -187,9 +189,9 @@ rows.
 | Artefact | Purpose |
 |---|---|
 | `data/raw/collection_manifest.json` | every endpoint, record count, target state, collection timestamps |
-| `data/raw/**` | untouched API payloads (636 gzipped game files, 16 team lists, 16 event files) |
+| `data/raw/**` | untouched API payloads (630 gzipped game files, 16 team lists, 16 event files) |
 | `data/processed/data_quality_report.json` | 14 structural checks, missingness table, model-sample composition |
-| `data/processed/validation_report.json` | the 56-check pass/fail list |
+| `data/processed/validation_report.json` | the 71-check pass/fail list |
 | `src/validate_outputs.py` | re-runnable verification of the whole artefact set |
 | `src/config.py` | the cutoff, the team list and the alias map — the three inputs that define the sample |
 
@@ -200,6 +202,6 @@ python src\run_pipeline.py
 ```
 
 Rebuilds every processed table, figure and Power BI export from the cached raw
-data, then re-runs the 56 validation checks. A live refresh
+data, then re-runs the 71 validation checks. A live refresh
 (`python src\run_pipeline.py --refresh`) requires `OE_API_KEY` in the
 environment and rewrites the manifest with new collection timestamps.

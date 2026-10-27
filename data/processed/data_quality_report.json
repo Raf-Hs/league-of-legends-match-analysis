@@ -1,11 +1,11 @@
 {
-  "generated_at_utc": "2026-10-25T23:31:40.689530+00:00",
+  "generated_at_utc": "2026-10-27T00:48:16.861617+00:00",
   "source": "Oracle's Elixir public API (see data/raw/collection_manifest.json)",
-  "collection_cutoff_utc": "2026-10-25T16:20:00Z",
+  "collection_cutoff_utc": "2026-10-27T00:00:00Z",
   "checks": {
     "games_with_invalid_winner_count": 0,
-    "fact_rows": 1272,
-    "dim_rows": 636,
+    "fact_rows": 1260,
+    "dim_rows": 630,
     "fact_duplicate_team_game": 0,
     "fact_games_without_pair": 0,
     "missing_duration": 0,
@@ -13,26 +13,26 @@
     "missing_gd10": 84,
     "gd10_with_fewer_than_5_players": 84,
     "target_match_present": 0,
-    "max_date_utc": "2026-10-25 00:34:10+00:00",
-    "min_date_utc": "2026-05-07 10:49:24+00:00",
-    "target_start_utc": "2026-10-25 17:00:00+00:00",
+    "max_date_utc": "2026-10-26 21:54:37+00:00",
+    "min_date_utc": "2026-05-09 09:20:11+00:00",
+    "target_start_utc": "2026-10-28 23:00:00+00:00",
     "first_blood_consistency": 0
   },
   "missingness_fact": {
     "duration_min": 0.0,
     "gold": 0.0,
     "gold_diff": 0.0,
-    "gd10": 0.066,
+    "gd10": 0.0667,
     "kills": 0.0,
     "deaths": 0.0,
     "towers": 0.0,
     "dragons": 0.0,
     "barons": 0.0,
     "first_blood": 0.0,
-    "opp_wr_10": 0.1321
+    "opp_wr_10": 0.131
   },
   "model_sample": {
-    "games": 222,
+    "games": 226,
     "teams": [
       "Anyone's Legend",
       "Bilibili Gaming",
@@ -51,11 +51,11 @@
       "Team Secret Whales",
       "Top Esports"
     ],
-    "date_min": "2026-05-25 15:59:31",
-    "date_max": "2026-10-25 00:34:10",
-    "games_with_min_5_prior": 177,
-    "games_with_min_8_prior": 156,
-    "games_with_min_10_prior": 147
+    "date_min": "2026-05-25 17:36:27",
+    "date_max": "2026-10-26 21:54:37",
+    "games_with_min_5_prior": 182,
+    "games_with_min_8_prior": 164,
+    "games_with_min_10_prior": 157
   },
   "head_to_head_games": 0
 }

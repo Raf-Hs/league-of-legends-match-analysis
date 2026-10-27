@@ -20,6 +20,8 @@ import pandas as pd
 from config import (
     POWERBI_DIR,
     PROCESSED_DIR,
+    PROJECT_ROOT,
+    TARGET_MATCH_ID,
     TARGET_MATCH_START_UTC,
     TEAM_A,
     TEAM_A_CODE,
@@ -252,8 +254,8 @@ def build_prediction() -> pd.DataFrame:
             {
                 "model": label_map.get(model, model),
                 "model_id": model,
-                "p_hle": p,
-                "p_ig": 1 - p,
+                "p_team_a": p,
+                "p_team_b": 1 - p,
                 "is_primary": int(model == "M3_core5"),
                 "holdout_accuracy": float(m["accuracy"]) if m is not None else np.nan,
                 "holdout_brier": float(m["brier"]) if m is not None else np.nan,
@@ -278,6 +280,32 @@ def build_prediction() -> pd.DataFrame:
     return pd.DataFrame(rows)
 
 
+def build_fixture_predictions() -> pd.DataFrame:
+    """The slate: one row per upcoming fixture with its forecast."""
+    df = pd.read_csv(PROCESSED_DIR / "fixture_predictions.csv", dtype={"match_id": str})
+    df["match_id"] = df["match_id"].astype(str)
+    df["is_target"] = (df["match_id"] == str(TARGET_MATCH_ID)).astype(int)
+    df["match_label"] = df["team_a_code"] + " vs " + df["team_b_code"]
+    return df
+
+
+def build_fixture_features() -> pd.DataFrame:
+    """Pre-game feature vector behind each slate row."""
+    return pd.read_csv(PROCESSED_DIR / "fixture_features.csv", dtype={"match_id": str})
+
+
+def build_validation_log() -> pd.DataFrame:
+    """The pre-registered predictions and their (optional) scores."""
+    path = PROJECT_ROOT / "powerbi" / "post_match_validation_log.csv"
+    if not path.exists():
+        return pd.DataFrame()
+    df = pd.read_csv(path, dtype={"match_id": str, "team_a_code": str, "team_b_code": str})
+    df["match_id"] = df["match_id"].astype(str)
+    df["match_label"] = df["team_a_code"] + " vs " + df["team_b_code"]
+    df["is_scored"] = df["brier_score"].notna().astype(int)
+    return df
+
+
 def main() -> None:
     POWERBI_DIR.mkdir(parents=True, exist_ok=True)
     fact = pd.read_csv(PROCESSED_DIR / "fact_team_games.csv", parse_dates=["date_utc"])
@@ -300,6 +328,9 @@ def main() -> None:
         "FactFeatureContribution.csv": pd.read_csv(PROCESSED_DIR / "target_feature_contributions.csv"),
         "FactScenario.csv": pd.read_csv(PROCESSED_DIR / "scenario_analysis.csv"),
         "FactPrediction.csv": build_prediction(),
+        "FactFixturePrediction.csv": build_fixture_predictions(),
+        "FactFixtureFeature.csv": build_fixture_features(),
+        "FactValidationLog.csv": build_validation_log(),
         "DimMetric.csv": pd.read_csv(PROCESSED_DIR / "kpi_definitions.csv"),
     }
     for filename, df in tables.items():

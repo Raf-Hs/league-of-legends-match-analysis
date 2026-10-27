@@ -17,6 +17,7 @@ Design choices
 from __future__ import annotations
 
 import json
+from math import comb
 from pathlib import Path
 
 import numpy as np
@@ -30,6 +31,7 @@ from sklearn.preprocessing import StandardScaler
 from config import (
     COLLECTION_CUTOFF_UTC,
     PROCESSED_DIR,
+    TARGET_MATCH_ID,
     TARGET_MATCH_START_UTC,
     TEAM_A,
     TEAM_A_CODE,
@@ -172,6 +174,80 @@ def expit(x: float) -> float:
     return float(1 / (1 + np.exp(-x)))
 
 
+def series_probability(p_game: float, best_of: int = 3) -> float:
+    """Probability of winning a best-of-N series from a per-game probability.
+
+    P(series win) = P(at least `needed` wins in `best_of` games), which for a
+    best-of-3 simplifies to p^2 * (3 - 2p). Assumes the games are independent
+    and that the per-game probability is the same in every game (no side or
+    draft adaptation). This is a stated simplification, not a model of Bo3
+    dynamics.
+    """
+    p = min(max(p_game, 0.0), 1.0)
+    if best_of <= 1:
+        return float(p)
+    needed = best_of // 2 + 1
+    total = 0.0
+    for wins in range(needed, best_of + 1):
+        total += comb(best_of, wins) * (p**wins) * ((1 - p) ** (best_of - wins))
+    return float(total)
+
+
+def build_fixture_predictions(
+    frame: pd.DataFrame,
+    features: list[str],
+    fixtures: pd.DataFrame,
+    n_boot: int = N_BOOTSTRAP,
+) -> pd.DataFrame:
+    """Predict every upcoming fixture with the primary model.
+
+    Outputs the side-neutral per-game probability, the two side scenarios, the
+    derived best-of-3 series probability and a bootstrap interval.
+    """
+    model = fit_model(frame, features)
+    rng = np.random.default_rng(RANDOM_STATE)
+    boot_models = []
+    for _ in range(n_boot):
+        idx = rng.integers(0, len(frame), len(frame))
+        sample = frame.iloc[idx]
+        if sample["team_a_win"].nunique() < 2:
+            continue
+        boot_models.append(fit_model(sample, features))
+
+    rows = []
+    for _, fixture in fixtures.iterrows():
+        x = pd.DataFrame(
+            [{f: float(fixture[f]) for f in features}]
+        )
+        p = float(model.predict_proba(x)[0, 1])
+        boot = np.array([float(m.predict_proba(x)[0, 1]) for m in boot_models])
+        rows.append(
+            {
+                "match_id": fixture["match_id"],
+                "team_a": fixture["team_a"],
+                "team_b": fixture["team_b"],
+                "team_a_code": fixture.get("team_a_code", TEAM_A_CODE),
+                "team_b_code": fixture.get("team_b_code", TEAM_B_CODE),
+                "start_utc": fixture["start_utc"],
+                "series_type": fixture["series_type"],
+                "block": fixture["block"],
+                "p_team_a_game": p,
+                "p_team_b_game": 1 - p,
+                "bootstrap_p05": float(np.percentile(boot, 5)),
+                "bootstrap_p50": float(np.percentile(boot, 50)),
+                "bootstrap_p95": float(np.percentile(boot, 95)),
+                "p_team_a_bo3": series_probability(p, 3),
+                "p_team_b_bo3": series_probability(1 - p, 3),
+                "p_team_a_bo3_low": series_probability(float(np.percentile(boot, 5)), 3),
+                "p_team_a_bo3_high": series_probability(float(np.percentile(boot, 95)), 3),
+                "pick": fixture.get("team_a_code", TEAM_A_CODE)
+                if p >= 0.5
+                else fixture.get("team_b_code", TEAM_B_CODE),
+            }
+        )
+    return pd.DataFrame(rows)
+
+
 def main() -> None:
     df = load_model_data()
     target = load_target()
@@ -225,7 +301,7 @@ def main() -> None:
                 }
             )
         final[name] = {
-            "p_hle": p_target,
+            "p_team_a": p_target,
             "p05": float(np.percentile(preds_boot, 5)),
             "p50": float(np.percentile(preds_boot, 50)),
             "p95": float(np.percentile(preds_boot, 95)),
@@ -271,7 +347,7 @@ def main() -> None:
             {
                 "feature": f,
                 "label": FEATURE_LABELS[f],
-                "raw_diff_hle_minus_ig": float(raw),
+                "raw_diff_team_a_minus_b": float(raw),
                 "standardized_value": float(zz),
                 "standardized_coefficient": float(cc),
                 "log_odds_contribution": float(zz * cc),
@@ -288,52 +364,55 @@ def main() -> None:
     )
 
     # Scenario analysis.
-    p_primary = final[PRIMARY]["p_hle"]
+    p_primary = final[PRIMARY]["p_team_a"]
     blue_rate = float(df["team_a_win"].mean())
     scenario_rows = [
         ("coin_flip", 0.5, "No-information baseline"),
         ("primary_core5", p_primary, "Primary side-neutral 5-feature model"),
-        ("core4", final["M2_core4"]["p_hle"], "Core 4 features, no objective composite"),
-        ("sensitivity_8", final["M4_sensitivity_8"]["p_hle"], "8-feature sensitivity model"),
-        ("win_rate_only", final["M1_win_rate"]["p_hle"], "Single-feature win-rate baseline"),
+        ("core4", final["M2_core4"]["p_team_a"], "Core 4 features, no objective composite"),
+        ("sensitivity_8", final["M4_sensitivity_8"]["p_team_a"], "8-feature sensitivity model"),
+        ("win_rate_only", final["M1_win_rate"]["p_team_a"], "Single-feature win-rate baseline"),
         (
-            "primary_if_hle_blue",
+            "primary_if_team_a_blue",
             expit(logit(p_primary) + logit(blue_rate)),
             f"Adds observed sample blue-side rate ({blue_rate:.1%}) as a prior",
         ),
         (
-            "primary_if_hle_red",
+            "primary_if_team_a_red",
             expit(logit(p_primary) + logit(1 - blue_rate)),
             f"Adds observed sample red-side rate ({1-blue_rate:.1%}) as a prior",
         ),
     ]
-    # Remove IG's end-game gold and objective edges; keep HLE's early edge.
-    neutral = target.copy()
-    neutral["gold_diff_10_diff"] = 0.0
-    neutral["obj_10_diff"] = 0.0
+    # Neutralise the edges of one team at a time, whichever side leads each
+    # feature. This keeps the scenarios valid for any fixture.
+    neutral_b = target.copy()
+    neutral_a = target.copy()
+    for feature in FEATURE_SETS[PRIMARY]:
+        value = float(target[feature])
+        if value < 0:
+            neutral_b[feature] = 0.0  # team_b leads this feature
+        elif value > 0:
+            neutral_a[feature] = 0.0  # team_a leads this feature
     scenario_rows.append(
         (
-            "neutralise_ig_endgame_edges",
-            predict(primary_model, neutral, FEATURE_SETS[PRIMARY]),
-            "Sets end-game gold diff and objective composite differences to zero",
+            "neutralise_team_b_edges",
+            predict(primary_model, neutral_b, FEATURE_SETS[PRIMARY]),
+            "Sets every feature where team_b leads to zero",
         )
     )
-    # Remove HLE's early gold edge; keep IG's end-game edges.
-    neutral2 = target.copy()
-    neutral2["gd10_10_diff"] = 0.0
     scenario_rows.append(
         (
-            "neutralise_hle_early_edge",
-            predict(primary_model, neutral2, FEATURE_SETS[PRIMARY]),
-            "Sets GD@10 difference to zero",
+            "neutralise_team_a_edges",
+            predict(primary_model, neutral_a, FEATURE_SETS[PRIMARY]),
+            "Sets every feature where team_a leads to zero",
         )
     )
     scenario = pd.DataFrame(
         [
             {
                 "scenario": s,
-                "p_hle": p,
-                "p_ig": 1 - p,
+                "p_team_a": p,
+                "p_team_b": 1 - p,
                 "note": note,
             }
             for s, p, note in scenario_rows
@@ -341,6 +420,31 @@ def main() -> None:
     )
     scenario.to_csv(
         PROCESSED_DIR / "scenario_analysis.csv", index=False, encoding="utf-8-sig"
+    )
+
+    # Predictions for every fixture on the next match day.
+    fixtures = pd.read_csv(PROCESSED_DIR / "fixture_features.csv")
+    fixture_predictions = build_fixture_predictions(
+        df, FEATURE_SETS[PRIMARY], fixtures
+    )
+    fixture_predictions.to_csv(
+        PROCESSED_DIR / "fixture_predictions.csv", index=False, encoding="utf-8-sig"
+    )
+    target_row = fixture_predictions[
+        fixture_predictions["match_id"].astype(str) == str(TARGET_MATCH_ID)
+    ]
+    target_bo3 = (
+        float(target_row["p_team_a_bo3"].iloc[0]) if len(target_row) else float("nan")
+    )
+
+    # Collinearity of the primary features, reported instead of hard-coded.
+    corr = df[FEATURE_SETS[PRIMARY]].corr().abs()
+    max_corr = float(
+        max(
+            corr.values[i][j]
+            for i in range(len(corr))
+            for j in range(i + 1, len(corr))
+        )
     )
 
     summary = {
@@ -370,17 +474,17 @@ def main() -> None:
             "features": FEATURE_SETS[PRIMARY],
             "regularization_C": C_FIXED,
             "fit_intercept": False,
-            "p_hle_win": p_primary,
-            "p_ig_win": 1 - p_primary,
+            "p_team_a_win": p_primary,
+            "p_team_b_win": 1 - p_primary,
             "bootstrap_p05": final[PRIMARY]["p05"],
             "bootstrap_p50": final[PRIMARY]["p50"],
             "bootstrap_p95": final[PRIMARY]["p95"],
             "holdout_metrics": final[PRIMARY]["test_metrics"],
         },
         "model_range": {
-            "min_p_hle": float(min(v["p_hle"] for v in final.values())),
-            "max_p_hle": float(max(v["p_hle"] for v in final.values())),
-            "models": {k: round(v["p_hle"], 4) for k, v in final.items()},
+            "min_p_team_a": float(min(v["p_team_a"] for v in final.values())),
+            "max_p_team_a": float(max(v["p_team_a"] for v in final.values())),
+            "models": {k: round(v["p_team_a"], 4) for k, v in final.items()},
         },
         "baseline": {
             "coinflip_brier": float(brier_score_loss(test["team_a_win"], np.full(len(test), 0.5))),
@@ -391,18 +495,31 @@ def main() -> None:
             "oof_primary": calibration[calibration["sample"] == "oof_primary_core5"].to_dict("records"),
         },
         "observed_blue_side_win_rate": blue_rate,
+        "fixtures": fixture_predictions.to_dict("records"),
+        "target_series_probability": {
+            "p_team_a_bo3": target_bo3,
+            "p_team_b_bo3": 1 - target_bo3,
+            "assumption": (
+                "Per-game probability converted to a best-of-3 series under the "
+                "assumption that games are independent and the per-game "
+                "probability is constant (no side or draft adaptation)."
+            ),
+        },
         "headline": (
             f"{TEAM_A_CODE} {p_primary:.1%} vs {TEAM_B_CODE} {1-p_primary:.1%} "
-            "under the primary side-neutral model; holdout discrimination is weak "
-            "(AUC near 0.50), so treat the match as close to a coin flip."
+            "per game under the primary side-neutral model; "
+            f"{target_bo3:.1%} / {1-target_bo3:.1%} if the series is played "
+            "best-of-3. Holdout discrimination is weak (AUC near 0.50), so "
+            "treat the fixture as close to a coin flip."
         ),
         "caveats": [
-            "The model is trained on 174 intra-Worlds games from a partial 2026 sample.",
-            "Features are highly collinear (0.83-0.94 among win rate, gold diff, kill diff and objectives).",
+            f"The model is trained on {len(df)} intra-Worlds games from a partial 2026 sample.",
+            f"Features are highly collinear (up to {max_corr:.2f} between win rate, gold diff, kill diff and objectives).",
             "The holdout AUC is near 0.50 and Brier/log loss are not better than a coin flip.",
             "The target side (blue/red) is not confirmed; the primary model is side-neutral.",
             "GD@10 is a proxy for GD@15 because the API does not expose GD@15.",
             "Event-level objective rates are stage aggregates, not game-level features.",
+            "Best-of-3 series probabilities assume independent games with a constant per-game probability.",
         ],
     }
     (PROCESSED_DIR / "prediction_summary.json").write_text(

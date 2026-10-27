@@ -22,22 +22,25 @@ star-schema CSVs in `data/powerbi/`.
 ## 1. Import the data
 
 **Get Data → Text/CSV** and load each file in `data/powerbi/`. When the file
-picker opens, select all 16 CSVs at once and press *Open* — Power BI loads
+picker opens, select all 19 CSVs at once and press *Open* — Power BI loads
 each as a separate query.
 
 | Query | Rows | Grain |
 |---|---:|---|
-| `DimDate` | 172 | one row per calendar date |
+| `DimDate` | 175 | one row per calendar date |
 | `DimTeam` | 57 | one row per team (16 flagged `is_worlds_cohort = 1`) |
-| `DimGame` | 636 | one row per game |
+| `DimGame` | 630 | one row per game |
 | `DimMetric` | 23 | one row per documented KPI |
-| `FactTeamGame` | 1,272 | one row per team per game |
-| `FactTeamForm` | 1,272 | one row per team per game, pre-game rolling form |
+| `FactTeamGame` | 1,260 | one row per team per game |
+| `FactTeamForm` | 1,260 | one row per team per game, pre-game rolling form |
 | `FactTeamKPI` | 16 | one row per Worlds team (5/10/20 windows) |
-| `FactMatchKPI` | 125 | one row per KPI/window/event |
+| `FactMatchKPI` | 103 | one row per KPI/window/event |
 | `FactTargetFeature` | 34 | one row per team per metric (last-10 snapshot) |
 | `FactTeamEventStat` | 800 | one row per team per event |
 | `FactPrediction` | 5 | one row per model specification |
+| `FactFixturePrediction` | 2 | one row per upcoming fixture (the slate) |
+| `FactFixtureFeature` | 2 | the pre-game feature vector behind each slate row |
+| `FactValidationLog` | 2 | one row per pre-registered prediction and its score |
 | `FactScenario` | 9 | one row per scenario |
 | `FactModelMetric` | 5 | one row per model (holdout metrics) |
 | `FactModelCoefficient` | 18 | one row per model × feature |
@@ -84,7 +87,8 @@ auto-detected twice against the same fact tables.
 **Deliberately unconnected** (they are presentation tables and would create
 ambiguous paths): `FactMatchKPI`, `FactPrediction`, `FactScenario`,
 `FactModelMetric`, `FactModelCoefficient`, `FactModelCalibration`,
-`FactFeatureContribution`, `DimMetric`.
+`FactFeatureContribution`, `FactFixturePrediction`, `FactFixtureFeature`,
+`FactValidationLog`, `DimMetric`.
 
 ### Hide these columns
 
@@ -126,13 +130,14 @@ pages.
 
 | # | Visual | Type | Field wells |
 |---|---|---|---|
-| 1 | *P(HLE)* | Card | Values `Primary P (HLE)` |
-| 2 | *P(IG)* | Card | Values `Primary P (IG)` |
+| 1 | *P(Team A)* | Card | Values `Primary P (Team A)` |
+| 2 | *P(Team B)* | Card | Values `Primary P (Team B)` |
 | 3 | *Lean* | Card | Values `Predicted Lean` |
-| 4 | *90% interval* | Card | Values `Bootstrap Low (HLE)`, `Bootstrap Mid (HLE)`, `Bootstrap High (HLE)` — set *Concatenate* |
+| 4 | *90% interval* | Card | Values `Bootstrap Low (Team A)`, `Bootstrap Mid (Team A)`, `Bootstrap High (Team A)` — set *Concatenate* |
 | 5 | *Holdout AUC* | Card | Values `Holdout AUC`, plus a text box underneath: `Coin Flip AUC` |
 | 6 | *Holdout Brier* | Card | Values `Holdout Brier`, plus `Coin Flip Brier` |
-| 7 | *Model range* | Clustered bar | Axis `FactPrediction[model]`, Values `FactPrediction[p_hle]`; add a constant line at 0.50 (**Analytics → Constant line**) |
+| 7 | *Model range* | Clustered bar | Axis `FactPrediction[model]`, Values `FactPrediction[p_team_a]`; add a constant line at 0.50 (**Analytics → Constant line**) |
+| 7b | *Match slate* | Table | Rows `FactFixturePrediction[match_label]`, Values `FactFixturePrediction[p_team_a_game]`, `FactFixturePrediction[p_team_b_game]`, `FactFixturePrediction[p_team_a_bo3]`, `FactFixturePrediction[bootstrap_p05]`, `FactFixturePrediction[bootstrap_p95]` |
 | 8 | *Scenario table* | Table | Rows `FactScenario[scenario]`, Values `Scenario P (HLE)`, `Scenario P (IG)`, `FactScenario[note]` |
 | 9 | *Model comparison* | Table | Rows `FactModelMetric[model]`, Values `FactModelMetric[accuracy]`, `FactModelMetric[brier]`, `FactModelMetric[log_loss]`, `FactModelMetric[auc]` |
 | 10 | *Caveat banner* | Text box | See text below |
@@ -140,14 +145,15 @@ pages.
 **Text box (visual 10) — copy verbatim:**
 
 ```
-Pre-match forecast — HLE vs IG, Worlds 2026 Swiss Day 3, best of 1.
-Start 2026-10-25 17:00 UTC · Data cutoff 2026-10-25 16:20 UTC · Oracle's Elixir match 115660540726095045 (state: unstarted at collection).
+Pre-match forecast — LYON vs Invictus Gaming, Worlds 2026 Swiss Day 5, best of 3.
+Start 2026-10-28 23:00 UTC · Data cutoff 2026-10-27 00:00 UTC · Oracle's Elixir match 115660540726095065 (state: unstarted at collection).
 
-Primary model: HLE 43.9% / IG 56.1%. 90% bootstrap interval for HLE: 37.2%–51.6%.
+Primary model: LYON 41.4% / IG 58.6% per game · 37.2% / 62.8% as a best of 3.
+90% bootstrap interval for LYON: 33.5%–48.9%.
 
-Honest read: the chronological holdout does not beat a coin flip
-(AUC 0.494, Brier 0.255 vs 0.250, log loss 0.703 vs 0.693).
-Treat this as a near coin flip with a marginal IG lean, not a confident forecast.
+Honest read: on the 85-game chronological holdout the model does not beat a coin
+flip (AUC 0.477, Brier 0.259 vs 0.250, log loss 0.712 vs 0.693).
+Treat this as close to even with a marginal IG lean, not a confident forecast.
 ```
 
 **Formatting notes**
@@ -164,9 +170,9 @@ Treat this as a near coin flip with a marginal IG lean, not a confident forecast
 
 | # | Visual | Type | Field wells |
 |---|---|---|---|
-| 1 | *HLE record* | Card | `HLE Last 10 Wins`, `HLE Last 10 Losses` (concatenate as "W–L") |
+| 1 | *LYON record* | Card | `LYON Last 10 Wins`, `LYON Last 10 Losses` (concatenate as "W–L") |
 | 2 | *IG record* | Card | `IG Last 10 Wins`, `IG Last 10 Losses` |
-| 3 | *HLE vs IG form rank* | Card | `HLE Form Rank (last 10)`, `IG Form Rank (last 10)` |
+| 3 | *LYON vs IG form rank* | Card | `LYON Form Rank (last 10)`, `IG Form Rank (last 10)` |
 | 4 | *Rolling win rate* | Line chart | Axis `FactTeamForm[date]`, Values `Rolling Win Rate (10)`, Legend `DimTeam[team]`; filter `DimTeam[is_target_team] = 1` |
 | 5 | *Rolling GD@10* | Line chart | Axis `FactTeamForm[date]`, Values `Rolling GD10 (10)`, Legend `DimTeam[team]`, same filter |
 | 6 | *Last-10 rates* | Clustered bar | Axis `FactTargetFeature[metric]` (filter to `win_rate`, `first_blood_rate`), Legend `FactTargetFeature[team]`, Values `FactTargetFeature[value]`; filter `FactTargetFeature[window] = "last10"` |
@@ -208,14 +214,16 @@ Treat this as a near coin flip with a marginal IG lean, not a confident forecast
 
 | # | Visual | Type | Field wells |
 |---|---|---|---|
-| 1 | *Prediction* | Card | `Primary P (HLE)`, `Primary P (IG)`, `Predicted Lean` |
-| 2 | *Uncertainty* | Card | `Bootstrap Low (HLE)`, `Bootstrap High (HLE)` (concatenate as a range) |
-| 3 | *Specification range* | Clustered bar | Axis `FactPrediction[model]`, Values `FactPrediction[p_hle]`, constant line 0.50 |
+| 1 | *Prediction* | Card | `Primary P (Team A)`, `Primary P (Team B)`, `Predicted Lean` |
+| 2 | *Uncertainty* | Card | `Bootstrap Low (Team A)`, `Bootstrap High (Team A)` (concatenate as a range) |
+| 2b | *Series (Bo3)* | Card | `Target Series Probability (Bo3)`, `Target Series Interval (Low)`, `Target Series Interval (High)` |
+| 3 | *Specification range* | Clustered bar | Axis `FactPrediction[model]`, Values `FactPrediction[p_team_a]`, constant line 0.50 |
 | 4 | *Feature contributions* | Waterfall | Category `FactFeatureContribution[label]`, Values `FactFeatureContribution[log_odds_contribution]`; add a "Total" category using `Total Log-Odds Contribution` |
 | 5 | *Coefficients* | Clustered bar | Axis `FactModelCoefficient[label]`, Values `Coefficient`; filter `FactModelCoefficient[model] = "M3_core5"`; tooltip `Coefficient Low (90%)`, `Coefficient High (90%)` |
 | 6 | *Calibration* | Scatter | X `FactModelCalibration[mean_pred]`, Y `FactModelCalibration[observed]`, Size `FactModelCalibration[n]`, Legend `FactModelCalibration[sample]`; filter `sample` to `holdout_primary_core5` |
 | 7 | *Model comparison* | Table | Rows `FactModelMetric[model]`, Values `FactModelMetric[accuracy]`, `FactModelMetric[brier]`, `FactModelMetric[log_loss]`, `FactModelMetric[auc]`, `FactModelMetric[n]` |
-| 8 | *Validation status* | Card | `Result Status` (optional table — see §10) |
+| 8 | *Validation status* | Card | `Result Status`, `Scored Matches`, `Running Brier Score` |
+| 8b | *Validation log* | Table | Rows `FactValidationLog[match_label]`, Values `FactValidationLog[predicted_p_team_a]`, `FactValidationLog[actual_winner]`, `FactValidationLog[brier_score]`, `FactValidationLog[log_loss]`, `FactValidationLog[correct_pick]` |
 | 9 | *Method note* | Text box | See text below |
 
 **Text box (visual 9):**
@@ -223,10 +231,11 @@ Treat this as a near coin flip with a marginal IG lean, not a confident forecast
 ```
 Primary model: L2 logistic regression, C = 0.5, no intercept (side-neutral), 5 features
 (last-10 differences in win rate, GD@10, end-game gold diff, kill diff, objective composite).
-Train 102 games before 2026-09-01 · Test 72 games from 2026-09-02 · 1,000-draw bootstrap.
+Train 94 games before 2026-09-01 · Test 85 games from 2026-09-02 · 1,000-draw bootstrap.
+Best-of-3 series probability = p² · (3 − 2p): independent games, constant per-game probability.
 
 Coefficients are unstable: all 90% bootstrap intervals include zero and the
-performance features correlate at 0.83–0.94. Read the waterfall as a description
+performance features correlate up to 0.94. Read the waterfall as a description
 of this fixture, not as causal evidence.
 ```
 
@@ -237,7 +246,7 @@ of this fixture, not as causal evidence.
   diagonal reference line without a helper table.
 - Visual 5: colour negative coefficients red, positive blue — but state in the
   caption that the signs are not causal.
-- Visual 4: the total is **−0.247 log-odds → 43.9%**.
+- Visual 4: the total is **−0.348 log-odds → 41.4%**.
 
 ## 9. Accessibility
 
@@ -255,22 +264,21 @@ of this fixture, not as causal evidence.
 
 1. Score the match:
    ```bat
-   python src\score_match.py --winner HLE|IG --side blue|red
+   python src\score_match.py --winner iG --side blue|red
    ```
 2. The row in `powerbi/post_match_validation_log.csv` is filled in with the
    winner, the Brier score, the log loss and whether the pick was correct.
-3. Load that CSV as `PostMatchValidationLog` and add the section 9 measures
-   from `dax_measures.md`.
-4. Refresh the report; the *Validation status* card flips from **Pending** to
-   **Scored**.
-5. Update `reports/model_card.md` with the observation — **one match is one
+3. Re-run the pipeline so `data/powerbi/FactValidationLog.csv` is refreshed
+   (`python src\run_pipeline.py`), then refresh the report; the *Validation
+   status* card flips from **Pending** to **Scored**.
+4. Update `reports/model_card.md` with the observation — **one match is one
    observation**, not a validation.
 
 ## 11. Data refresh after a new match day
 
 1. Update `COLLECTION_CUTOFF_UTC` and `TARGET_MATCH_START_UTC` in `src/config.py`.
 2. `python src\run_pipeline.py --refresh` (needs `OE_API_KEY` in the environment).
-3. The 16 CSVs in `data/powerbi/` are rewritten in place — open the report and
+3. The 19 CSVs in `data/powerbi/` are rewritten in place — open the report and
    hit **Refresh**; no rebinding is needed as long as the file names and
    column names are unchanged.
 4. Re-check the target-match exclusion: `python src\validate_outputs.py` must
@@ -287,3 +295,4 @@ of this fixture, not as causal evidence.
 | Team code for IG looks wrong (`iG`) | that is Oracle's Elixir spelling | filter on `DimTeam[team]` instead |
 | `Avg GD10` differs from the reports | `AVERAGE` skips the 84 rows without `gxd10` | expected; the reports use the same rule |
 | `FactMatchKPI` cannot be joined to a team | it is a wide comparison table with no team key | use it on its own page without a relationship |
+| `FactFixturePrediction` will not join to `DimTeam` | the slate is a presentation table keyed by match, not by team | filter with `FactFixturePrediction[match_label]` instead |

@@ -83,14 +83,15 @@ DIVIDE (
 )
 ```
 
-## 2. Target-team measures (HLE vs IG)
+## 2. Target-team measures (LYON vs IG)
 
 These ignore whatever team the visual is filtered to, so they are safe to place
-on a card next to a team slicer.
+on a card next to a team slicer. The names below match the current fixture
+(LYON vs IG); rename the two teams when the target changes.
 
 ```dax
-HLE Games =
-CALCULATE ( [Games Played], DimTeam[team] = "Hanwha Life Esports" )
+LYON Games =
+CALCULATE ( [Games Played], DimTeam[team] = "LYON (2024 American Team)" )
 ```
 
 ```dax
@@ -99,8 +100,8 @@ CALCULATE ( [Games Played], DimTeam[team] = "Invictus Gaming" )
 ```
 
 ```dax
-HLE Win Rate =
-CALCULATE ( [Win Rate], DimTeam[team] = "Hanwha Life Esports" )
+LYON Win Rate =
+CALCULATE ( [Win Rate], DimTeam[team] = "LYON (2024 American Team)" )
 ```
 
 ```dax
@@ -109,8 +110,8 @@ CALCULATE ( [Win Rate], DimTeam[team] = "Invictus Gaming" )
 ```
 
 ```dax
-HLE Avg GD10 =
-CALCULATE ( [Avg GD10], DimTeam[team] = "Hanwha Life Esports" )
+LYON Avg GD10 =
+CALCULATE ( [Avg GD10], DimTeam[team] = "LYON (2024 American Team)" )
 ```
 
 ```dax
@@ -119,8 +120,8 @@ CALCULATE ( [Avg GD10], DimTeam[team] = "Invictus Gaming" )
 ```
 
 ```dax
-HLE Avg Gold Diff =
-CALCULATE ( [Avg Gold Diff], DimTeam[team] = "Hanwha Life Esports" )
+LYON Avg Gold Diff =
+CALCULATE ( [Avg Gold Diff], DimTeam[team] = "LYON (2024 American Team)" )
 ```
 
 ```dax
@@ -129,8 +130,8 @@ CALCULATE ( [Avg Gold Diff], DimTeam[team] = "Invictus Gaming" )
 ```
 
 ```dax
-HLE Avg Objective Score =
-CALCULATE ( [Avg Objective Score], DimTeam[team] = "Hanwha Life Esports" )
+LYON Avg Objective Score =
+CALCULATE ( [Avg Objective Score], DimTeam[team] = "LYON (2024 American Team)" )
 ```
 
 ```dax
@@ -139,8 +140,8 @@ CALCULATE ( [Avg Objective Score], DimTeam[team] = "Invictus Gaming" )
 ```
 
 ```dax
-HLE First Blood Rate =
-CALCULATE ( [First Blood Rate], DimTeam[team] = "Hanwha Life Esports" )
+LYON First Blood Rate =
+CALCULATE ( [First Blood Rate], DimTeam[team] = "LYON (2024 American Team)" )
 ```
 
 ```dax
@@ -152,14 +153,14 @@ CALCULATE ( [First Blood Rate], DimTeam[team] = "Invictus Gaming" )
 Head-to-Head Games =
 CALCULATE (
     DISTINCTCOUNT ( FactTeamGame[oe_game_id] ),
-    ( FactTeamGame[team] = "Hanwha Life Esports"
+    ( FactTeamGame[team] = "LYON (2024 American Team)"
         && FactTeamGame[opponent] = "Invictus Gaming" )
         || ( FactTeamGame[team] = "Invictus Gaming"
-            && FactTeamGame[opponent] = "Hanwha Life Esports" )
+            && FactTeamGame[opponent] = "LYON (2024 American Team)" )
 )
 ```
 
-> Returns **0** for this sample: HLE and IG did not meet in the collected
+> Returns **0** for this sample: LYON and IG did not meet in the collected
 > games. The measure exists so the claim is verifiable in the report.
 
 ## 3. KPI snapshot (from `FactTeamKPI`)
@@ -167,13 +168,13 @@ CALCULATE (
 `FactTeamKPI` is a one-row-per-team snapshot with last-5/10/20 windows.
 
 ```dax
-HLE Last 10 Wins =
-CALCULATE ( MAX ( FactTeamKPI[last10_wins] ), FactTeamKPI[team] = "Hanwha Life Esports" )
+LYON Last 10 Wins =
+CALCULATE ( MAX ( FactTeamKPI[last10_wins] ), FactTeamKPI[team] = "LYON (2024 American Team)" )
 ```
 
 ```dax
-HLE Last 10 Losses =
-CALCULATE ( MAX ( FactTeamKPI[last10_losses] ), FactTeamKPI[team] = "Hanwha Life Esports" )
+LYON Last 10 Losses =
+CALCULATE ( MAX ( FactTeamKPI[last10_losses] ), FactTeamKPI[team] = "LYON (2024 American Team)" )
 ```
 
 ```dax
@@ -187,8 +188,8 @@ CALCULATE ( MAX ( FactTeamKPI[last10_losses] ), FactTeamKPI[team] = "Invictus Ga
 ```
 
 ```dax
-HLE Last 10 Win Rate =
-CALCULATE ( MAX ( FactTeamKPI[last10_win_rate] ), FactTeamKPI[team] = "Hanwha Life Esports" )
+LYON Last 10 Win Rate =
+CALCULATE ( MAX ( FactTeamKPI[last10_win_rate] ), FactTeamKPI[team] = "LYON (2024 American Team)" )
 ```
 
 ```dax
@@ -197,8 +198,8 @@ CALCULATE ( MAX ( FactTeamKPI[last10_win_rate] ), FactTeamKPI[team] = "Invictus 
 ```
 
 ```dax
-HLE Form Rank (last 10) =
-CALCULATE ( MAX ( FactTeamKPI[form_rank_last10] ), FactTeamKPI[team] = "Hanwha Life Esports" )
+LYON Form Rank (last 10) =
+CALCULATE ( MAX ( FactTeamKPI[form_rank_last10] ), FactTeamKPI[team] = "LYON (2024 American Team)" )
 ```
 
 ```dax
@@ -207,8 +208,8 @@ CALCULATE ( MAX ( FactTeamKPI[form_rank_last10] ), FactTeamKPI[team] = "Invictus
 ```
 
 ```dax
-HLE vs Worlds Win Rate =
-CALCULATE ( MAX ( FactTeamKPI[win_rate_vs_worlds] ), FactTeamKPI[team] = "Hanwha Life Esports" )
+LYON vs Worlds Win Rate =
+CALCULATE ( MAX ( FactTeamKPI[win_rate_vs_worlds] ), FactTeamKPI[team] = "LYON (2024 American Team)" )
 ```
 
 ```dax
@@ -264,34 +265,34 @@ AVERAGE ( FactTeamForm[sos_10] )
 ## 5. Prediction (from `FactPrediction`)
 
 ```dax
-Primary P (HLE) =
-CALCULATE ( MAX ( FactPrediction[p_hle] ), FactPrediction[is_primary] = 1 )
+Primary P (Team A) =
+CALCULATE ( MAX ( FactPrediction[p_team_a] ), FactPrediction[is_primary] = 1 )
 ```
 
 ```dax
-Primary P (IG) =
-CALCULATE ( MAX ( FactPrediction[p_ig] ), FactPrediction[is_primary] = 1 )
+Primary P (Team B) =
+CALCULATE ( MAX ( FactPrediction[p_team_b] ), FactPrediction[is_primary] = 1 )
 ```
 
 ```dax
 Predicted Lean =
-VAR p = [Primary P (HLE)]
+VAR p = [Primary P (Team A)]
 RETURN
-    IF ( p >= 0.5, "HLE", "IG" )
+    IF ( p >= 0.5, "Team A", "Team B" )
 ```
 
 ```dax
-Bootstrap Low (HLE) =
+Bootstrap Low (Team A) =
 CALCULATE ( MAX ( FactPrediction[bootstrap_p05] ), FactPrediction[is_primary] = 1 )
 ```
 
 ```dax
-Bootstrap Mid (HLE) =
+Bootstrap Mid (Team A) =
 CALCULATE ( MAX ( FactPrediction[bootstrap_p50] ), FactPrediction[is_primary] = 1 )
 ```
 
 ```dax
-Bootstrap High (HLE) =
+Bootstrap High (Team A) =
 CALCULATE ( MAX ( FactPrediction[bootstrap_p95] ), FactPrediction[is_primary] = 1 )
 ```
 
@@ -453,50 +454,48 @@ AVERAGE ( FactTeamEventStat[egr] )
 
 ## 9. Post-match validation (optional table)
 
-Load `powerbi/post_match_validation_log.csv` as `PostMatchValidationLog`
-**only after** the match is scored, otherwise the measures return blanks.
-Add this step last — the rest of the report does not depend on it.
+The table `FactValidationLog` is exported by the pipeline from
+`powerbi/post_match_validation_log.csv`. Rows whose result columns are empty
+return blanks, so the measures work before and after the match is scored.
 
 ```dax
 Actual Winner =
-MAX ( PostMatchValidationLog[actual_winner] )
+MAX ( FactValidationLog[actual_winner] )
 ```
 
 ```dax
-Actual HLE Win =
-MAX ( PostMatchValidationLog[actual_hle_win] )
+Actual Team A Win =
+MAX ( FactValidationLog[actual_team_a_win] )
 ```
 
 ```dax
 Match Brier Score =
-MAX ( PostMatchValidationLog[brier_score] )
+MAX ( FactValidationLog[brier_score] )
 ```
 
 ```dax
 Match Log Loss =
-MAX ( PostMatchValidationLog[log_loss] )
+MAX ( FactValidationLog[log_loss] )
 ```
 
 ```dax
 Correct Pick =
-MAX ( PostMatchValidationLog[correct_pick] )
+MAX ( FactValidationLog[correct_pick] )
 ```
 
 ```dax
 Scored Matches =
-COUNTROWS (
-    FILTER ( PostMatchValidationLog, NOT ISBLANK ( PostMatchValidationLog[brier_score] ) )
-)
+COUNTROWS ( FILTER ( FactValidationLog, FactValidationLog[is_scored] = 1 ) )
 ```
 
 ```dax
 Running Brier Score =
-AVERAGE ( PostMatchValidationLog[brier_score] )
+AVERAGE ( FactValidationLog[brier_score] )
 ```
 
 ```dax
 Running Log Loss =
-AVERAGE ( PostMatchValidationLog[log_loss] )
+AVERAGE ( FactValidationLog[log_loss] )
 ```
 
 ```dax
@@ -504,9 +503,59 @@ Result Status =
 IF ( ISBLANK ( [Match Brier Score] ), "Pending", "Scored" )
 ```
 
+## 10. Match slate (from `FactFixturePrediction`)
+
+One row per upcoming fixture, with the per-game probability, the bootstrap
+interval and the derived best-of-3 series probability.
+
+```dax
+Slate Rows =
+COUNTROWS ( FactFixturePrediction )
+```
+
+```dax
+Target Per-Game Probability =
+CALCULATE (
+    MAX ( FactFixturePrediction[p_team_a_game] ),
+    FactFixturePrediction[is_target] = 1
+)
+```
+
+```dax
+Target Series Probability (Bo3) =
+CALCULATE (
+    MAX ( FactFixturePrediction[p_team_a_bo3] ),
+    FactFixturePrediction[is_target] = 1
+)
+```
+
+```dax
+Target Series Interval (Low) =
+CALCULATE (
+    MAX ( FactFixturePrediction[p_team_a_bo3_low] ),
+    FactFixturePrediction[is_target] = 1
+)
+```
+
+```dax
+Target Series Interval (High) =
+CALCULATE (
+    MAX ( FactFixturePrediction[p_team_a_bo3_high] ),
+    FactFixturePrediction[is_target] = 1
+)
+```
+
+```dax
+Slate Lean =
+VAR p = [Target Per-Game Probability]
+RETURN
+    IF ( p >= 0.5, "Team A", "Team B" )
+```
+
+
 ---
 
-## 10. Formatting and display
+## 11. Formatting and display
 
 | Measure | Format string |
 |---|---|
@@ -532,8 +581,9 @@ IF ( ISBLANK ( [Match Brier Score] ), "Pending", "Scored" )
 | `03 · Model Diagnostics` | section 7 |
 | `04 · Event Context` | section 8 |
 | `05 · Validation` | section 9 |
+| `06 · Match Slate` | section 10 |
 
-## 11. Gotchas
+## 12. Gotchas
 
 1. **`DimTeam[team_code]` for IG is `iG`** (Oracle's Elixir spelling), not `IG`.
    Filter on `DimTeam[team]` instead of the code wherever possible.
@@ -551,5 +601,9 @@ IF ( ISBLANK ( [Match Brier Score] ), "Pending", "Scored" )
    `gd10` filter if you need the denominator.
 6. **`FactPrediction[is_primary]`** is 1 only for `M3_core5`. The section 5
    measures filter on it, so they stay correct even if a new model is added.
-7. **Never average a probability across models** — use `FactPrediction` row by
+7. **The slate is per game, the target card can be per series.** `FactFixturePrediction`
+   carries both: `p_team_a_game` (model output) and `p_team_a_bo3` (derived under
+   the independence assumption). Label the two cards explicitly so nobody reads
+   the series number as a model output.
+8. **Never average a probability across models** — use `FactPrediction` row by
    row (one row per model) so each probability keeps its own context.

@@ -22,8 +22,8 @@ from matplotlib.patches import Patch
 
 from config import FIGURES_DIR, PROCESSED_DIR, TEAM_A, TEAM_A_CODE, TEAM_B, TEAM_B_CODE
 
-HLE = "#F2A33A"
-IG = "#C8102E"
+AMBER = "#F2A33A"
+CRIMSON = "#C8102E"
 INK = "#1F2933"
 MUTED = "#7B8794"
 GRID = "#D9E2EC"
@@ -90,8 +90,8 @@ def fig_form(data: dict) -> None:
     ]:
         h = [t.loc[TEAM_A, f"{win}_{metric}"] for win in windows]
         i = [t.loc[TEAM_B, f"{win}_{metric}"] for win in windows]
-        b1 = ax.bar(x - w / 2, h, w, color=HLE, label=TEAM_A_CODE)
-        b2 = ax.bar(x + w / 2, i, w, color=IG, label=TEAM_B_CODE)
+        b1 = ax.bar(x - w / 2, h, w, color=AMBER, label=TEAM_A_CODE)
+        b2 = ax.bar(x + w / 2, i, w, color=CRIMSON, label=TEAM_B_CODE)
         ax.set_xticks(x, labels)
         ax.set_title(title)
         ax.axhline(0, color=INK, linewidth=0.8)
@@ -115,7 +115,7 @@ def fig_form(data: dict) -> None:
                     color=INK,
                 )
     fig.suptitle(
-        "Recent form is level on wins; IG owns the end-game gold edge",
+        f"Recent form on wins, and the end-game gold edge of {TEAM_B_CODE}",
         fontsize=14,
         fontweight="bold",
         x=0.01,
@@ -135,7 +135,7 @@ def fig_form(data: dict) -> None:
 
 def fig_gd10(data: dict) -> None:
     fig, ax = plt.subplots(figsize=(11, 4.8))
-    for team, color, label in [(TEAM_A, HLE, TEAM_A_CODE), (TEAM_B, IG, TEAM_B_CODE)]:
+    for team, color, label in [(TEAM_A, AMBER, TEAM_A_CODE), (TEAM_B, CRIMSON, TEAM_B_CODE)]:
         d = team_games(data["fact"], team).tail(20).reset_index(drop=True)
         ax.plot(
             d.index + 1,
@@ -154,7 +154,7 @@ def fig_gd10(data: dict) -> None:
     ax.set_xlabel("Most recent 20 games (oldest to newest)")
     ax.set_ylabel("Gold difference at 10 min")
     ax.yaxis.set_major_formatter(lambda v, _: f"{v:+,.0f}")
-    ax.set_title("Early-game gold: HLE has the higher ceiling, IG the steadier recent mean")
+    ax.set_title(f"Early-game gold (GD@10): {TEAM_A_CODE} vs {TEAM_B_CODE}, last 20 games")
     ax.legend(loc="upper left", ncol=2)
     fig.text(
         0.01,
@@ -180,7 +180,7 @@ def fig_objectives(data: dict) -> None:
     fig, axes = plt.subplots(1, len(metrics), figsize=(15, 4.1))
     for ax, (metric, title, fmt) in zip(axes, metrics):
         vals = [t.loc[TEAM_A, metric], t.loc[TEAM_B, metric]]
-        bars = ax.bar([TEAM_A_CODE, TEAM_B_CODE], vals, color=[HLE, IG], width=0.62)
+        bars = ax.bar([TEAM_A_CODE, TEAM_B_CODE], vals, color=[AMBER, CRIMSON], width=0.62)
         ax.set_title(title, fontsize=10)
         ax.axhline(0, color=INK, linewidth=0.8)
         for bar, v in zip(bars, vals):
@@ -196,7 +196,7 @@ def fig_objectives(data: dict) -> None:
             )
         ax.tick_params(axis="x", labelsize=9)
     fig.suptitle(
-        "Objective control: IG leads the composite, dragons and barons; HLE leads first blood",
+        f"Objective control: composite, dragons, barons and first blood for {TEAM_A_CODE} vs {TEAM_B_CODE}",
         fontsize=14,
         fontweight="bold",
         x=0.01,
@@ -216,8 +216,8 @@ def fig_objectives(data: dict) -> None:
 def fig_history(data: dict) -> None:
     fig, axes = plt.subplots(2, 1, figsize=(12, 6.4), sharex=False)
     for ax, team, color in [
-        (axes[0], TEAM_A, HLE),
-        (axes[1], TEAM_B, IG),
+        (axes[0], TEAM_A, AMBER),
+        (axes[1], TEAM_B, CRIMSON),
     ]:
         d = team_games(data["fact"], team).tail(20).reset_index(drop=True)
         colors = [GREEN if w == 1 else RED for w in d["win"]]
@@ -285,7 +285,7 @@ def fig_model_comparison(data: dict) -> None:
         (axes[1], "brier", "Holdout Brier score (lower is better)", 0.25),
     ]:
         bars = ax.bar(x, c[metric], color=[MUTED] + [BLUE] * 4, width=0.62)
-        bars[3].set_color(HLE)
+        bars[3].set_color(AMBER)
         ax.axhline(baseline, color=RED, linestyle="--", linewidth=1.4, label="Coin-flip baseline")
         ax.set_xticks(x, labels)
         ax.set_title(title)
@@ -372,7 +372,7 @@ def fig_calibration(data: dict) -> None:
     ax.plot([0, 1], [0, 1], color=MUTED, linestyle="--", linewidth=1.2, label="Perfect calibration")
     styles = {
         "oof_primary_core5": (BLUE, "o", "Out-of-fold (time-series CV)"),
-        "holdout_primary_core5": (HLE, "s", "Holdout (72 games)"),
+        "holdout_primary_core5": (AMBER, "s", "Holdout (85 games)"),
     }
     for sample, (color, marker, label) in styles.items():
         d = c[(c["sample"] == sample) & (c["n"] > 0)].sort_values("mean_pred")
@@ -407,11 +407,11 @@ def fig_calibration(data: dict) -> None:
 
 def fig_prediction(data: dict) -> None:
     s = json.loads((PROCESSED_DIR / "prediction_summary.json").read_text(encoding="utf-8"))
-    p = s["primary_model"]["p_hle_win"]
+    p = s["primary_model"]["p_team_a_win"]
     lo, hi = s["primary_model"]["bootstrap_p05"], s["primary_model"]["bootstrap_p95"]
     fig, ax = plt.subplots(figsize=(9.6, 3.2))
-    ax.barh([0], [p], color=HLE, height=0.5, label=f"{TEAM_A_CODE} {p:.1%}")
-    ax.barh([0], [1 - p], left=[p], color=IG, height=0.5, label=f"{TEAM_B_CODE} {1-p:.1%}")
+    ax.barh([0], [p], color=AMBER, height=0.5, label=f"{TEAM_A_CODE} {p:.1%}")
+    ax.barh([0], [1 - p], left=[p], color=CRIMSON, height=0.5, label=f"{TEAM_B_CODE} {1-p:.1%}")
     ax.errorbar(
         [p],
         [0],
@@ -468,8 +468,8 @@ def fig_contributions(data: dict) -> None:
     colors = [RED if v < 0 else GREEN for v in c["log_odds_contribution"]]
     bars = ax.barh(c["label"], c["log_odds_contribution"], color=colors, height=0.6)
     ax.axvline(0, color=INK, linewidth=0.9)
-    ax.set_xlabel("Contribution to log-odds of HLE winning")
-    ax.set_title("What moves the primary model: IG's objective and gold edges outweigh HLE's early gold")
+    ax.set_xlabel(f"Contribution to the log-odds of {TEAM_A_CODE} winning")
+    ax.set_title(f"What moves the primary model for {TEAM_A_CODE} vs {TEAM_B_CODE}")
     for bar, v in zip(bars, c["log_odds_contribution"]):
         ax.annotate(
             f"{v:+.3f}",
@@ -483,7 +483,7 @@ def fig_contributions(data: dict) -> None:
     fig.text(
         0.01,
         0.01,
-        "Contribution = standardized target difference x standardized coefficient. Red pushes HLE down; green pushes HLE up. "
+        f"Contribution = standardized target difference x standardized coefficient. Red pushes {TEAM_A_CODE} down; green pushes {TEAM_A_CODE} up. "
         "The intercept is zero by design.",
         fontsize=8,
         color=MUTED,
@@ -494,12 +494,12 @@ def fig_contributions(data: dict) -> None:
 
 def fig_ranking(data: dict) -> None:
     t = data["team"].sort_values("form_index_last10", ascending=True).copy()
-    colors = [HLE if x == TEAM_A else IG if x == TEAM_B else MUTED for x in t["team"]]
+    colors = [AMBER if x == TEAM_A else CRIMSON if x == TEAM_B else MUTED for x in t["team"]]
     fig, ax = plt.subplots(figsize=(9.8, 7.2))
     bars = ax.barh(t["team"], t["form_index_last10"], color=colors, height=0.65)
     ax.axvline(0, color=INK, linewidth=0.9)
     ax.set_xlabel("Form index (mean z-score of last-10 win rate, gold diff, kill diff, objective score)")
-    ax.set_title("Descriptive last-10 form index: HLE and IG both sit in the bottom third")
+    ax.set_title(f"Descriptive last-10 form index: {TEAM_A_CODE} and {TEAM_B_CODE} among the cohort")
     for bar, v in zip(bars, t["form_index_last10"]):
         ax.annotate(
             f"{v:+.2f}",
@@ -514,7 +514,7 @@ def fig_ranking(data: dict) -> None:
         0.01,
         0.01,
         "The index is descriptive, not a prediction: it ignores schedule context and opponent quality beyond the SOS column in team_kpis.csv. "
-        "HLE is 14th and IG 12th of 16.",
+        f"{TEAM_A_CODE} and {TEAM_B_CODE} are ranked inside the cohort of {len(t)} teams.",
         fontsize=8,
         color=MUTED,
     )

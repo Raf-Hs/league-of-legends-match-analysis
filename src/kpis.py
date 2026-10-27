@@ -30,6 +30,7 @@ from config import (
     TEAM_B,
     TEAM_B_CODE,
     TEAM_REGION,
+    UPCOMING_FIXTURES,
     WORLDS_TEAMS,
     canonical_team,
 )
@@ -404,12 +405,12 @@ def target_snapshot(fact: pd.DataFrame, form: pd.DataFrame) -> tuple[pd.DataFram
     wide = {v: raw[TEAM_A_CODE][k] - raw[TEAM_B_CODE][k] for k, v in mapping.items()}
     wide.update(
         {
-            "hle_last_game_utc": raw[TEAM_A_CODE]["last_game_utc"].isoformat(),
-            "ig_last_game_utc": raw[TEAM_B_CODE]["last_game_utc"].isoformat(),
-            "hle_rest_days": raw[TEAM_A_CODE]["rest_days"],
-            "ig_rest_days": raw[TEAM_B_CODE]["rest_days"],
-            "hle_gd10_games": raw[TEAM_A_CODE]["gd10_games"],
-            "ig_gd10_games": raw[TEAM_B_CODE]["gd10_games"],
+            "team_a_last_game_utc": raw[TEAM_A_CODE]["last_game_utc"].isoformat(),
+            "team_b_last_game_utc": raw[TEAM_B_CODE]["last_game_utc"].isoformat(),
+            "team_a_rest_days": raw[TEAM_A_CODE]["rest_days"],
+            "team_b_rest_days": raw[TEAM_B_CODE]["rest_days"],
+            "team_a_gd10_games": raw[TEAM_A_CODE]["gd10_games"],
+            "team_b_gd10_games": raw[TEAM_B_CODE]["gd10_games"],
         }
     )
     return long, pd.DataFrame([wide])
@@ -444,6 +445,67 @@ def kpi_definitions() -> pd.DataFrame:
     return pd.DataFrame(rows, columns=["metric", "definition", "formula", "direction"])
 
 
+def build_fixture_features(fact: pd.DataFrame, form: pd.DataFrame) -> pd.DataFrame:
+    """One row per upcoming fixture with the pre-game feature vector.
+
+    The feature convention matches the model: the difference of the two teams'
+    last-10 means (team_a minus team_b). Because the fixtures have not been
+    played, the "last 10" are the ten most recent games of each team before
+    the collection cutoff.
+    """
+    fact = fact.merge(
+        form[["oe_game_id", "team", "opp_wr_10"]],
+        on=["oe_game_id", "team"],
+        how="left",
+    )
+    mapping = {
+        "win_rate": "wr_10_diff",
+        "gd10": "gd10_10_diff",
+        "gold_diff": "gold_diff_10_diff",
+        "kd_diff": "kd_diff_10_diff",
+        "objective_score": "obj_10_diff",
+        "first_blood_rate": "fb_rate_10_diff",
+        "duration_min": "duration_10_diff",
+        "sos": "sos_10_diff",
+    }
+    rows = []
+    codes = (
+        fact[["team", "team_code"]]
+        .dropna()
+        .drop_duplicates("team")
+        .set_index("team")["team_code"]
+        .to_dict()
+    )
+    for fixture in UPCOMING_FIXTURES:
+        team_a, team_b = fixture["team_a"], fixture["team_b"]
+        a = fact[fact["team"] == team_a].sort_values(["date_utc", "oe_game_id"]).tail(10)
+        b = fact[fact["team"] == team_b].sort_values(["date_utc", "oe_game_id"]).tail(10)
+        stats_a = window_stats(a, 10)
+        stats_b = window_stats(b, 10)
+        row = {
+            "match_id": fixture["match_id"],
+            "team_a": team_a,
+            "team_b": team_b,
+            "team_a_code": codes.get(team_a, ""),
+            "team_b_code": codes.get(team_b, ""),
+            "start_utc": fixture["start_utc"],
+            "series_type": fixture["series_type"],
+            "block": fixture.get("block", ""),
+            "team_a_games": int(stats_a.get("games", 0)),
+            "team_b_games": int(stats_b.get("games", 0)),
+            "team_a_win_rate": stats_a.get("win_rate", np.nan),
+            "team_b_win_rate": stats_b.get("win_rate", np.nan),
+            "team_a_last_game_utc": str(stats_a.get("last_game_utc", "")),
+            "team_b_last_game_utc": str(stats_b.get("last_game_utc", "")),
+            "team_a_rest_days": stats_a.get("rest_days", np.nan),
+            "team_b_rest_days": stats_b.get("rest_days", np.nan),
+        }
+        for key, feature in mapping.items():
+            row[feature] = float(stats_a.get(key, np.nan)) - float(stats_b.get(key, np.nan))
+        rows.append(row)
+    return pd.DataFrame(rows)
+
+
 def main() -> None:
     PROCESSED_DIR.mkdir(parents=True, exist_ok=True)
     fact, form, dim = load_inputs()
@@ -452,6 +514,7 @@ def main() -> None:
     team_kpis = build_team_kpis(fact, form)
     match_kpis = build_match_kpis(team_kpis, events)
     target_long, target_wide = target_snapshot(fact, form)
+    fixture_features = build_fixture_features(fact, form)
 
     team_kpis.to_csv(PROCESSED_DIR / "team_kpis.csv", index=False, encoding="utf-8-sig")
     match_kpis.to_csv(PROCESSED_DIR / "match_kpis.csv", index=False, encoding="utf-8-sig")
@@ -460,6 +523,9 @@ def main() -> None:
     )
     target_wide.to_csv(
         PROCESSED_DIR / "target_model_input.csv", index=False, encoding="utf-8-sig"
+    )
+    fixture_features.to_csv(
+        PROCESSED_DIR / "fixture_features.csv", index=False, encoding="utf-8-sig"
     )
     events.to_csv(
         PROCESSED_DIR / "team_event_stats.csv", index=False, encoding="utf-8-sig"
@@ -477,12 +543,13 @@ def main() -> None:
         "target_start_utc": TARGET_MATCH_START_UTC,
         "teams": int(len(team_kpis)),
         "target_features": target_wide.iloc[0].to_dict(),
-        "hle_form_rank": int(
+        "team_a_form_rank": int(
             team_kpis.loc[team_kpis["team"] == TEAM_A, "form_rank_last10"].iloc[0]
         ),
-        "ig_form_rank": int(
+        "team_b_form_rank": int(
             team_kpis.loc[team_kpis["team"] == TEAM_B, "form_rank_last10"].iloc[0]
         ),
+        "fixtures": fixture_features.to_dict("records"),
     }
     (PROCESSED_DIR / "kpi_summary.json").write_text(
         json.dumps(summary, indent=2, default=str), encoding="utf-8"

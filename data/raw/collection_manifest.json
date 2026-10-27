@@ -1,97 +1,97 @@
 {
-  "collected_at_utc": "2026-10-25T16:25:32.618067+00:00",
-  "finished_at_utc": "2026-10-25T16:26:06.811059+00:00",
-  "collection_cutoff_utc": "2026-10-25T16:20:00Z",
+  "collected_at_utc": "2026-10-27T00:20:05.020664+00:00",
+  "finished_at_utc": "2026-10-27T00:22:57.134835+00:00",
+  "collection_cutoff_utc": "2026-10-27T00:00:00Z",
   "target_match": {
-    "match_id": "115660540726095045",
-    "team_a": "Hanwha Life Esports",
+    "match_id": "115660540726095065",
+    "team_a": "LYON (2024 American Team)",
     "team_b": "Invictus Gaming",
     "upcoming_record": {
-      "matchId": "115660540726095045",
+      "matchId": "115660540726095065",
       "league": "WLDs",
       "leagueName": "World Championship",
-      "team1Id": "Hanwha Life Esports",
-      "team1Name": "Hanwha Life Esports",
-      "team1Code": "HLE",
-      "team1Logo": "100205573496804586Alternative.png",
+      "team1Id": "LYON (2024 American Team)",
+      "team1Name": "LYON",
+      "team1Code": "LYON",
+      "team1Logo": "99566405941863385Alternative.png",
       "team2Id": "Invictus Gaming",
       "team2Name": "Invictus Gaming",
-      "team2Code": "iG",
+      "team2Code": "IG",
       "team2Logo": "99566404848691211Alternative.png",
-      "startTime": "2026-10-25T17:00:00.000Z",
-      "seriesType": "bestOf1",
-      "blockName": "Swiss, Day 3",
+      "startTime": "2026-10-28T23:00:00.000Z",
+      "seriesType": "bestOf3",
+      "blockName": "Swiss, Day 5",
       "state": "unstarted"
     }
   },
   "sources": {
     "upcoming": {
       "endpoint": "https://api.oracleselixir.com/matches/upcoming",
-      "records": 8
+      "records": 6
     },
     "team_game_lists": {
       "Hanwha Life Esports": {
-        "source": "cache",
+        "source": "https://api.oracleselixir.com/teams/gameDetails/Hanwha%20Life%20Esports",
         "games": 50
       },
       "Gen.G": {
-        "source": "cache",
+        "source": "https://api.oracleselixir.com/teams/gameDetails/Gen.G",
         "games": 50
       },
       "T1": {
-        "source": "cache",
+        "source": "https://api.oracleselixir.com/teams/gameDetails/T1",
         "games": 50
       },
       "Dplus Kia": {
-        "source": "cache",
+        "source": "https://api.oracleselixir.com/teams/gameDetails/Dplus%20Kia",
         "games": 50
       },
       "Anyone's Legend": {
-        "source": "cache",
+        "source": "https://api.oracleselixir.com/teams/gameDetails/Anyone%27s%20Legend",
         "games": 50
       },
       "Bilibili Gaming": {
-        "source": "cache",
+        "source": "https://api.oracleselixir.com/teams/gameDetails/Bilibili%20Gaming",
         "games": 50
       },
       "Top Esports": {
-        "source": "cache",
+        "source": "https://api.oracleselixir.com/teams/gameDetails/Top%20Esports",
         "games": 50
       },
       "Invictus Gaming": {
-        "source": "cache",
+        "source": "https://api.oracleselixir.com/teams/gameDetails/Invictus%20Gaming",
         "games": 50
       },
       "Team Liquid": {
-        "source": "cache",
+        "source": "https://api.oracleselixir.com/teams/gameDetails/Team%20Liquid",
         "games": 50
       },
       "LYON (2024 American Team)": {
-        "source": "cache",
+        "source": "https://api.oracleselixir.com/teams/gameDetails/LYON%20%282024%20American%20Team%29",
         "games": 50
       },
       "G2 Esports": {
-        "source": "cache",
+        "source": "https://api.oracleselixir.com/teams/gameDetails/G2%20Esports",
         "games": 50
       },
       "Movistar KOI": {
-        "source": "cache",
+        "source": "https://api.oracleselixir.com/teams/gameDetails/Movistar%20KOI",
         "games": 50
       },
       "Team Secret Whales": {
-        "source": "cache",
+        "source": "https://api.oracleselixir.com/teams/gameDetails/Team%20Secret%20Whales",
         "games": 50
       },
       "CTBC Flying Oyster": {
-        "source": "cache",
+        "source": "https://api.oracleselixir.com/teams/gameDetails/CTBC%20Flying%20Oyster",
         "games": 50
       },
       "Karmine Corp": {
-        "source": "cache",
+        "source": "https://api.oracleselixir.com/teams/gameDetails/Karmine%20Corp",
         "games": 50
       },
       "LØS": {
-        "source": "cache",
+        "source": "https://api.oracleselixir.com/teams/gameDetails/L%C3%98S",
         "games": 50
       }
     },
@@ -162,14 +162,14 @@
       }
     },
     "game_details": {
-      "count": 636,
+      "count": 630,
       "endpoint_template": "https://api.oracleselixir.com/games/singleGame/{oe_game_id}"
     }
   },
   "counts": {
-    "unique_games": 636,
-    "eligible_games": 636,
-    "game_details": 636
+    "unique_games": 630,
+    "eligible_games": 630,
+    "game_details": 630
   },
   "notes": [
     "Oracle's Elixir CSV download was unavailable (Google Drive quota exceeded).",

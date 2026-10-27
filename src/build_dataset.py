@@ -26,6 +26,7 @@ from config import (
     PROCESSED_DIR,
     RAW_DIR,
     TARGET_MATCH_ID,
+    TARGET_MATCH_START_UTC,
     TEAM_A,
     TEAM_B,
     WORLDS_TEAMS,
@@ -34,7 +35,13 @@ from config import (
 
 
 RAW_GAMES = RAW_DIR / "game_details"
-TARGET_START = pd.Timestamp("2026-10-25T17:00:00Z")
+
+# A game may only be used if it started before the collection cutoff, and a
+# game may only be *predicted* if it starts after the cutoff. The target
+# match itself is never part of the sample.
+CUTOFF = pd.Timestamp(COLLECTION_CUTOFF_UTC)
+TARGET_START = pd.Timestamp(TARGET_MATCH_START_UTC)
+MAX_GAME_DATE = min(CUTOFF, TARGET_START)
 
 
 def load_game_lists() -> pd.DataFrame:
@@ -48,7 +55,14 @@ def load_game_lists() -> pd.DataFrame:
     return df
 
 
-def load_details() -> list[dict]:
+def load_details(allowed_ids: set[str] | None = None) -> list[dict]:
+    """Load the cached game payloads.
+
+    `allowed_ids` is the set of games referenced by the current team game
+    lists. The raw folder can still hold payloads from an earlier collection
+    (the last-50-game window slides, so old games fall out of the lists); those
+    are ignored so the fact table always matches the collection manifest.
+    """
     games = []
     for path in sorted(RAW_GAMES.glob("*.json.gz")):
         with gzip.open(path, "rt", encoding="utf-8") as fh:
@@ -57,6 +71,8 @@ def load_details() -> list[dict]:
             continue
         game = payload[0]
         if game.get("metadata", {}).get("state") != "completed":
+            continue
+        if allowed_ids is not None and game.get("gameId") not in allowed_ids:
             continue
         games.append(game)
     return games
@@ -161,7 +177,7 @@ def build_fact(games: list[dict], game_lists: pd.DataFrame) -> pd.DataFrame:
             rows.append(team_row(game, side, gmeta))
     df = pd.DataFrame(rows)
     df["date_utc"] = pd.to_datetime(df["date_utc"], utc=True, errors="coerce")
-    df = df[df["date_utc"] < TARGET_START].copy()
+    df = df[df["date_utc"] < MAX_GAME_DATE].copy()
     df = df[df["match_id"] != TARGET_MATCH_ID].copy()
     df = df.drop_duplicates(subset=["oe_game_id", "team"], keep="first")
     df = df.sort_values(["date_utc", "oe_game_id", "side"]).reset_index(drop=True)
@@ -216,7 +232,7 @@ def build_dim_games(games: list[dict], game_lists: pd.DataFrame) -> pd.DataFrame
         )
     df = pd.DataFrame(rows)
     df["date_utc"] = pd.to_datetime(df["date_utc"], utc=True, errors="coerce")
-    df = df[df["date_utc"] < TARGET_START].copy()
+    df = df[df["date_utc"] < MAX_GAME_DATE].copy()
     df = df[df["match_id"] != TARGET_MATCH_ID].copy()
     return df.drop_duplicates(subset=["oe_game_id"]).sort_values("date_utc").reset_index(drop=True)
 
@@ -318,7 +334,7 @@ def build_model_dataset(form: pd.DataFrame) -> pd.DataFrame:
 def main() -> None:
     PROCESSED_DIR.mkdir(parents=True, exist_ok=True)
     game_lists = load_game_lists()
-    details = load_details()
+    details = load_details(set(game_lists["oeGameId"]))
     print(f"Loaded {len(game_lists)} game-list rows and {len(details)} game details")
 
     fact = build_fact(details, game_lists)
