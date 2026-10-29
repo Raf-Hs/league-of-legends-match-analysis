@@ -306,6 +306,13 @@ def build_validation_log() -> pd.DataFrame:
     return df
 
 
+def build_model_prediction() -> pd.DataFrame:
+    """One row per (model, holdout game) for the probability-distribution visual."""
+    df = pd.read_csv(PROCESSED_DIR / "model_predictions_test.csv")
+    df["match_id"] = df["oe_game_id"].astype(str)
+    return df
+
+
 def main() -> None:
     POWERBI_DIR.mkdir(parents=True, exist_ok=True)
     fact = pd.read_csv(PROCESSED_DIR / "fact_team_games.csv", parse_dates=["date_utc"])
@@ -331,6 +338,7 @@ def main() -> None:
         "FactFixturePrediction.csv": build_fixture_predictions(),
         "FactFixtureFeature.csv": build_fixture_features(),
         "FactValidationLog.csv": build_validation_log(),
+        "FactModelPrediction.csv": build_model_prediction(),
         "DimMetric.csv": pd.read_csv(PROCESSED_DIR / "kpi_definitions.csv"),
     }
     for filename, df in tables.items():

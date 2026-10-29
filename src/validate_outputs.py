@@ -82,6 +82,7 @@ REQUIRED_POWERBI = [
     "FactFixturePrediction.csv",
     "FactFixtureFeature.csv",
     "FactValidationLog.csv",
+    "FactModelPrediction.csv",
     "DimMetric.csv",
 ]
 

@@ -82,19 +82,23 @@ league-of-legends-match-analysis/
 │   ├── model.py               chronological model, bootstrap, calibration, slate
 │   ├── visualizations.py      10 portfolio charts
 │   ├── export_powerbi.py      star-schema CSVs for Power BI
-│   ├── validate_outputs.py    71 mechanical checks (incl. secret scan)
+│   ├── validate_outputs.py    72 mechanical checks (incl. secret scan)
 │   ├── score_match.py         scores the finished match into the validation log
 │   └── run_pipeline.py        one-command orchestration
+├── figures/
+│   ├── 01_*.png .. 10_*.png   10 portfolio charts (200 dpi)
+│   ├── dashboard_preview.png   dark-theme portfolio preview (mockup)
+│   └── make_dashboard_preview.py  regenerates the preview
 ├── data/
 │   ├── raw/                   raw API responses + collection manifest
 │   ├── processed/             cleaned analysis tables and model outputs
 │   └── powerbi/               19 Power BI-ready star-schema CSV tables
-├── figures/                   10 PNG charts (200 dpi)
 ├── powerbi/
 │   ├── dashboard_guide.md     page-by-page build instructions (4 pages)
 │   ├── dax_measures.md        copy-paste DAX measures
-│   ├── theme.json             Power BI colour theme
+│   ├── theme.json             Power BI colour theme (dark)
 │   └── post_match_validation_log.csv   pre-registered predictions + results
+├── DASHBOARD_GUIDE.md         top-level entry point for the Power BI deliverable
 ├── reports/
 │   ├── executive_report.md
 │   ├── model_card.md
@@ -238,13 +242,21 @@ side assignment, patch-level form update), is in
 
 ## Power BI
 
-The `data/powerbi/` folder contains **19 star-schema tables** (`DimTeam`,
-`DimGame`, `DimDate`, `DimMetric` and 15 fact tables) that load directly into
+The `data/powerbi/` folder contains **20 star-schema tables** (`DimTeam`,
+`DimGame`, `DimDate`, `DimMetric` and 16 fact tables) that load directly into
 Power BI Desktop.
 
-- [`powerbi/dashboard_guide.md`](powerbi/dashboard_guide.md) — import steps, data types, the 9 relationships, and the exact field wells for all four pages: **Executive Summary, Team Performance, Match History, Prediction & Validation**.
-- [`powerbi/dax_measures.md`](powerbi/dax_measures.md) — 70+ copy-paste DAX measures, formatting strings and the gotchas that break the report.
-- [`powerbi/theme.json`](powerbi/theme.json) — the colour theme (HLE/IG amber `#D97706`, IG blue `#2563EB`, colour-blind safe).
+- [`DASHBOARD_GUIDE.md`](DASHBOARD_GUIDE.md) — top-level entry point: design,
+  KPIs, model evaluation, filters, validation, refresh.
+- [`powerbi/dashboard_guide.md`](powerbi/dashboard_guide.md) — import steps, data
+  types, the 9 relationships, and the exact field wells for all four pages:
+  **Executive Summary, Team Performance, Match History, Prediction & Validation**.
+- [`powerbi/dax_measures.md`](powerbi/dax_measures.md) — 75+ copy-paste DAX
+  measures, formatting strings and the gotchas that break the report.
+- [`powerbi/theme.json`](powerbi/theme.json) — the colour theme (dark charcoal
+  background, orange `#FF6B35` and blue `#2D7FF9` accents, colour-blind safe).
+- `figures/dashboard_preview.png` — a static mockup of the intended layout
+  (portfolio preview; the interactive report is built in Power BI Desktop).
 
 > **No native `.pbix` file is included.** Power BI Desktop was not controlled by this project. The CSVs, theme, DAX and build guide let you assemble the report manually in Power BI Desktop.
 
@@ -312,12 +324,13 @@ set OE_API_KEY=<your key>
 - [x] Chronological model with holdout metrics
 - [x] Bootstrap uncertainty, scenario analysis and the full slate
 - [x] 10 charts
-- [x] Power BI star-schema CSVs (19 tables)
+- [x] Power BI star-schema CSVs (20 tables, incl. slate and prediction distribution)
 - [x] Executive report, model card, data quality log
 - [x] Pre-registered post-match validation plan + scoring script
 - [x] Rendered data-quality log (plus the machine-readable JSON twin)
-- [x] Power BI build guide, DAX measures and colour theme
+- [x] Power BI build guide, DAX measures, colour theme (dark) and preview mockup
 - [x] One forecast scored end to end (HLE vs IG, 2026-10-25)
-- [x] 71/71 validation checks (including the hardcoded-secret scan)
+- [x] Second forecast pre-registered (LYON vs IG, 2026-10-28, pending result)
+- [x] 72/72 validation checks (including the hardcoded-secret scan)
 - [ ] Native `.pbix` (requires Power BI Desktop; not generated)
 - [ ] Post-match result for the Wednesday fixture (row is pre-registered and pending)
